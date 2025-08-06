@@ -6,7 +6,6 @@ import Footer from "../../components/Footer";
 import Link from "next/link";
 import {
   LinkIcon,
-  HandShakeIcon,
   LightBulbIcon,
   RocketLaunchIcon,
   SparklesIcon,

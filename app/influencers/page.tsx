@@ -481,12 +481,6 @@ const InfluencerPage = () => {
                               src={influencer.profileImage}
                               alt={influencer.name}
                               className="h-16 w-16 rounded-full object-cover"
-                              onError={(e) => {
-                                e.target.onerror = null;
-                                e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                                  influencer.name
-                                )}&background=random&size=64`;
-                              }}
                             />
                           </div>
                           <div className="flex-1 min-w-0">
@@ -557,12 +551,6 @@ const InfluencerPage = () => {
                   src={selectedInfluencer.profileImage}
                   alt={selectedInfluencer.name}
                   className="h-20 w-20 rounded-full object-cover"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                      selectedInfluencer.name
-                    )}&background=random&size=80`;
-                  }}
                 />
                 <div>
                   <div className="flex items-center">
@@ -653,7 +641,7 @@ const InfluencerPage = () => {
                     </ul>
                   </div>
 
-                  <div className="bg-gray-50 rounded-xl p-6 shadow-sm">
+                  {/* <div className="bg-gray-50 rounded-xl p-6 shadow-sm">
                     <p className="text-sm font-semibold text-gray-800 mb-2">
                       Rates
                     </p>
@@ -669,7 +657,7 @@ const InfluencerPage = () => {
                         )
                       )}
                     </ul>
-                  </div>
+                  </div> */}
                 </div>
               </div>
 
