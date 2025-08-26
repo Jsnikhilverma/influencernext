@@ -81,7 +81,9 @@ const InfluencerPage = () => {
     const fetchInfluencers = async () => {
       try {
         setLoading(true);
-        const response = await fetch("http://localhost:4000/api/influencers");
+        const response = await fetch(
+          "https://my-backend-lljl.onrender.com/api/influencers"
+        );
         const data = await response.json();
 
         if (data.influencers) {
@@ -105,7 +107,7 @@ const InfluencerPage = () => {
     try {
       const token = localStorage.getItem("token"); // Assuming token is stored in localStorage
       const response = await fetch(
-        `http://localhost:4000/api/influencers/slug/${slug}`,
+        `https://my-backend-lljl.onrender.com/api/influencers/slug/${slug}`,
         {
           method: "GET",
           headers: {

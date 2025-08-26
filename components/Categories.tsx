@@ -102,14 +102,14 @@ const staggerContainer = {
 const Categories = () => {
   return (
     <section className="py-16 bg-gradient-to-r from-purple-600 to-pink-600">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-16 ">
         {/* Stats Section */}
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
           variants={staggerContainer}
-          className="mb-20 bg-white rounded-2xl p-8 shadow-xl border border-gray-100"
+          className="mb-20 mt-20 bg-white rounded-2xl p-8 shadow-xl border border-gray-100"
         >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (

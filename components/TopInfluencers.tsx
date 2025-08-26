@@ -47,7 +47,9 @@ const TopInfluencers = () => {
   useEffect(() => {
     const fetchInfluencers = async () => {
       try {
-        const response = await fetch("http://localhost:4000/api/influencers");
+        const response = await fetch(
+          "https://my-backend-lljl.onrender.com/api/influencers"
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch influencers");
         }

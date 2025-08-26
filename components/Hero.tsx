@@ -38,7 +38,7 @@ const Hero = () => {
   }, [backgroundImages.length]);
 
   return (
-    <section className="relative w-full h-[70vh] mt-20 overflow-hidden">
+    <section className="relative w-full h-[70vh] mt-20">
       {/* Background Images Container */}
       <div className="absolute w-full h-full">
         {backgroundImages.map((image, index) => (
@@ -61,7 +61,7 @@ const Hero = () => {
       <div className="absolute inset-0 bg-black/20"></div>
 
       {/* Search Box */}
-      <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 w-[90%] max-w-5xl bg-white rounded-xl shadow-xl p-6 z-10">
+      <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 w-[90%] max-w-5xl bg-white rounded-xl shadow-xl p-6 ">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-gray-800">
             Find Your Best Influencer

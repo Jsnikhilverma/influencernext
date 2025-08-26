@@ -68,7 +68,7 @@ const DiscoverPage = () => {
       try {
         setLoading(true);
         const response = await fetch(
-          "http://localhost:4000/api/clients/projects"
+          "https://my-backend-lljl.onrender.com/api/clients/projects"
         );
         const data = await response.json();
 
@@ -92,7 +92,7 @@ const DiscoverPage = () => {
   const fetchProjectDetails = async (projectId) => {
     try {
       const response = await fetch(
-        `http://localhost:4000/api/clients/projects/id/${projectId}`
+        `https://my-backend-lljl.onrender.com/api/clients/projects/id/${projectId}`
       );
       const data = await response.json();
 
@@ -170,7 +170,7 @@ const DiscoverPage = () => {
       }
 
       const response = await fetch(
-        "http://localhost:4000/api/influencers/bids",
+        "https://my-backend-lljl.onrender.com/api/influencers/bids",
         {
           method: "POST",
           headers: {
