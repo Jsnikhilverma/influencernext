@@ -51,7 +51,7 @@ A modern, responsive web platform for influencers to connect with brands, discov
    ```
 
 4. **Open your browser**
-   Navigate to [http://localhost:3000](http://localhost:3000)
+   Navigate to [https://my-backend-lljl.onrender.com](http://localhost:3000)
 
 ## 🏗️ Project Structure
 
