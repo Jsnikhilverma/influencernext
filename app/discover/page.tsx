@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import {
@@ -14,7 +14,7 @@ import {
   ClockIcon,
   DocumentTextIcon,
   StarIcon,
-} from "@heroicons/react/24/solid"; // Changed to solid icons for a bolder look
+} from "@heroicons/react/24/solid";
 
 const DiscoverPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -28,20 +28,26 @@ const DiscoverPage = () => {
     message: "",
     duration: "",
   });
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [bidError, setBidError] = useState("");
+  const [bidSuccess, setBidSuccess] = useState("");
+  const [isSubmittingBid, setIsSubmittingBid] = useState(false);
 
   const categories = [
     "All",
-    "Web Development",
-    "SEO",
-    "Internet of Things",
-    "AI",
-    "Graphics & Design",
-    "Digital Marketing",
-    "App Development",
-    "Video & Animation",
-    "Writing & Translation",
-    "Influencer Marketing",
-    "Social Media Marketing",
+    "Tech",
+    "Lifestyle",
+    "Gaming",
+    "Beauty",
+    "Education",
+    "Entertainment",
+    "Business",
+    "Health",
+    "Food",
+    "Travel",
+    "Fashion",
   ];
 
   const budgetRanges = [
@@ -56,183 +62,152 @@ const DiscoverPage = () => {
 
   const dateFilters = ["All", "Last 24 hr", "Last Week", "Last Month"];
 
-  const projects = [
-    {
-      id: 1,
-      title: "E-commerce Website Development",
-      category: "Web Development",
-      budget: "$2400",
-      datePosted: "12 Oct 2024",
-      description:
-        "Need a modern e-commerce website with payment integration and inventory management system.",
-      fullDescription:
-        "We are looking for an experienced web developer to create a modern e-commerce website for our retail business. The website should include:\n\n• User authentication and registration\n• Product catalog with search and filtering\n• Shopping cart and checkout system\n• Payment gateway integration (Stripe/PayPal)\n• Inventory management system\n• Admin dashboard for product management\n• Mobile responsive design\n• SEO optimization\n\nWe prefer someone with experience in React, Node.js, and MongoDB. The project should be completed within 2-3 months.",
-      client: "Anthe Lile",
-      proposals: 3,
-      skills: ["React", "Node.js", "MongoDB", "Stripe"],
-      location: "United States",
-      duration: "2-3 months",
-      experience: "Intermediate",
-      projectType: "Fixed Price",
-      clientRating: 4.8,
-      totalSpent: "$15,000+",
-      avgHourlyRate: "$25/hr",
-    },
-    {
-      id: 2,
-      title: "Mobile App for Food Delivery",
-      category: "App Development",
-      budget: "$3500",
-      datePosted: "11 Oct 2024",
-      description:
-        "Looking for an experienced developer to create a food delivery app with real-time tracking.",
-      fullDescription:
-        "We need a food delivery mobile application with the following features:\n\n• User registration and login\n• Restaurant listing and menu Browse\n• Food ordering and payment\n• Real-time order tracking\n• Push notifications\n• Driver app for delivery personnel\n• Restaurant admin panel\n• Payment integration\n• Rating and review system\n\nExperience with React Native, Firebase, and Google Maps API is required. The app should be available on both iOS and Android.",
-      client: "Mike Chen",
-      proposals: 5,
-      skills: ["React Native", "Firebase", "Google Maps API"],
-      location: "Canada",
-      duration: "3-4 months",
-      experience: "Expert",
-      projectType: "Fixed Price",
-      clientRating: 4.9,
-      totalSpent: "$25,000+",
-      avgHourlyRate: "$35/hr",
-    },
-    {
-      id: 3,
-      title: "AI-Powered Chatbot Development",
-      category: "AI",
-      budget: "$1800",
-      datePosted: "10 Oct 2024",
-      description:
-        "Need a chatbot for customer service with natural language processing capabilities.",
-      fullDescription:
-        "We require an AI-powered chatbot for our customer service department with the following capabilities:\n\n• Natural language processing\n• Integration with our existing CRM system\n• Multi-language support (English, Spanish)\n• 24/7 availability\n• Ticket creation and escalation\n• Knowledge base integration\n• Analytics and reporting\n• Custom training on our business processes\n\nExperience with Python, TensorFlow, and NLP is essential. The chatbot should be able to handle common customer inquiries and escalate complex issues to human agents.",
-      client: "Sarah Johnson",
-      proposals: 2,
-      skills: ["Python", "TensorFlow", "NLP", "API Integration"],
-      location: "United Kingdom",
-      duration: "1-2 months",
-      experience: "Intermediate",
-      projectType: "Fixed Price",
-      clientRating: 4.7,
-      totalSpent: "$8,000+",
-      avgHourlyRate: "$30/hr",
-    },
-    {
-      id: 4,
-      title: "Social Media Marketing Campaign",
-      category: "Digital Marketing",
-      budget: "$1200",
-      datePosted: "9 Oct 2024",
-      description:
-        "Looking for a marketing expert to run a 3-month social media campaign for our startup.",
-      fullDescription:
-        "We are a startup looking for an experienced social media marketer to run a comprehensive 3-month campaign across multiple platforms:\n\n• Facebook and Instagram advertising\n• Content creation and curation\n• Community management\n• Influencer partnerships\n• Performance tracking and reporting\n• A/B testing and optimization\n• Brand voice development\n• Lead generation strategies\n\nWe are targeting young professionals aged 25-35. The campaign should focus on brand awareness and lead generation.",
-      client: "Emma Rodriguez",
-      proposals: 8,
-      skills: ["Facebook Ads", "Instagram Marketing", "Content Creation"],
-      location: "Australia",
-      duration: "3 months",
-      experience: "Intermediate",
-      projectType: "Fixed Price",
-      clientRating: 4.6,
-      totalSpent: "$12,000+",
-      avgHourlyRate: "$20/hr",
-    },
-    {
-      id: 5,
-      title: "Logo and Brand Identity Design",
-      category: "Graphics & Design",
-      budget: "$800",
-      datePosted: "8 Oct 2024",
-      description:
-        "Need a professional logo design and complete brand identity package for our tech company.",
-      fullDescription:
-        "We are a new tech startup and need a complete brand identity package including:\n\n• Primary and secondary logo designs\n• Logo variations (horizontal, vertical, icon only)\n• Brand color palette\n• Typography guidelines\n• Business card design\n• Letterhead and envelope design\n• Social media templates\n• Brand style guide\n\nWe are looking for a modern, professional design that reflects innovation and trust. Our target audience is B2B clients in the technology sector.",
-      client: "David Kim",
-      proposals: 12,
-      skills: ["Logo Design", "Brand Identity", "Adobe Creative Suite"],
-      location: "Germany",
-      duration: "2 weeks",
-      experience: "Intermediate",
-      projectType: "Fixed Price",
-      clientRating: 4.8,
-      totalSpent: "$5,000+",
-      avgHourlyRate: "$25/hr",
-    },
-    {
-      id: 6,
-      title: "SEO Optimization for E-commerce",
-      category: "SEO",
-      budget: "$1500",
-      datePosted: "7 Oct 2024",
-      description:
-        "Need SEO expert to optimize our e-commerce website for better search engine rankings.",
-      fullDescription:
-        "We have an existing e-commerce website that needs comprehensive SEO optimization:\n\n• Technical SEO audit and fixes\n• Keyword research and optimization\n• On-page SEO improvements\n• Content optimization\n• Local SEO setup\n• Google My Business optimization\n• Schema markup implementation\n• Performance optimization\n• Monthly reporting and recommendations\n\nWe are targeting high-value keywords in the fashion industry. The website is built on Shopify and we need someone with experience in e-commerce SEO.",
-      client: "Lisa Park",
-      proposals: 4,
-      skills: ["SEO", "Google Analytics", "Keyword Research"],
-      location: "Netherlands",
-      duration: "2 months",
-      experience: "Expert",
-      projectType: "Fixed Price",
-      clientRating: 4.9,
-      totalSpent: "$20,000+",
-      avgHourlyRate: "$40/hr",
-    },
-  ];
+  // Fetch all projects
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(
+          "http://localhost:4000/api/clients/projects"
+        );
+        const data = await response.json();
+
+        if (response.ok) {
+          setProjects(data.projects || []);
+        } else {
+          setError("Failed to fetch projects");
+        }
+      } catch (err) {
+        setError("Error connecting to server");
+        console.error("Error fetching projects:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
+  // Fetch project details by ID
+  const fetchProjectDetails = async (projectId) => {
+    try {
+      const response = await fetch(
+        `http://localhost:4000/api/clients/projects/id/${projectId}`
+      );
+      const data = await response.json();
+
+      if (response.ok) {
+        return data.project;
+      } else {
+        console.error("Failed to fetch project details");
+        return null;
+      }
+    } catch (err) {
+      console.error("Error fetching project details:", err);
+      return null;
+    }
+  };
 
   const filteredProjects = projects.filter((project) => {
     const matchesCategory =
-      selectedCategory === "All" || project.category === selectedCategory;
+      selectedCategory === "All" ||
+      (project.niches &&
+        project.niches.includes(selectedCategory.toLowerCase()));
+
     const matchesSearch =
       project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      project.description.toLowerCase().includes(searchQuery.toLowerCase());
+      (project.description &&
+        project.description.toLowerCase().includes(searchQuery.toLowerCase()));
+
+    const budgetValue = project.budgetMin || 0;
 
     const matchesBudget =
       selectedBudget === "All" ||
       (selectedBudget === "$100 - $500" &&
-        parseInt(project.budget.replace(/[$,]/g, "")) >= 100 &&
-        parseInt(project.budget.replace(/[$,]/g, "")) <= 500) ||
+        budgetValue >= 100 &&
+        budgetValue <= 500) ||
       (selectedBudget === "$500 - $1000" &&
-        parseInt(project.budget.replace(/[$,]/g, "")) >= 500 &&
-        parseInt(project.budget.replace(/[$,]/g, "")) <= 1000) ||
+        budgetValue >= 500 &&
+        budgetValue <= 1000) ||
       (selectedBudget === "$1000 - $5000" &&
-        parseInt(project.budget.replace(/[$,]/g, "")) >= 1000 &&
-        parseInt(project.budget.replace(/[$,]/g, "")) <= 5000) ||
-      (selectedBudget === "$5000+" &&
-        parseInt(project.budget.replace(/[$,]/g, "")) >= 5000);
+        budgetValue >= 1000 &&
+        budgetValue <= 5000) ||
+      (selectedBudget === "$5000+" && budgetValue >= 5000);
 
-    // This is a simplified date filter logic. You would need to use a date library for production.
-    const matchesDate =
-      selectedDate === "All" || project.datePosted.includes(selectedDate);
+    // Simplified date filtering - would need proper date handling in production
+    const matchesDate = selectedDate === "All";
 
     return matchesCategory && matchesSearch && matchesBudget && matchesDate;
   });
 
-  const handleProjectClick = (project) => {
-    setSelectedProject(project);
+  const handleProjectClick = async (project) => {
+    const projectDetails = await fetchProjectDetails(project._id);
+    setSelectedProject(projectDetails || project);
     setShowBidForm(false);
     setBidData({
       price: "",
       message: "",
       duration: "",
     });
+    setBidError("");
+    setBidSuccess("");
   };
 
-  const handleBidSubmit = (e) => {
+  const handleBidSubmit = async (e) => {
     e.preventDefault();
-    console.log("Bid submitted:", bidData);
-    // Handle bid submission logic here
-    setShowBidForm(false);
-    setBidData({
-      price: "",
-      message: "",
-      duration: "",
-    });
+    setIsSubmittingBid(true);
+    setBidError("");
+    setBidSuccess("");
+
+    try {
+      // Get the token from localStorage
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        setBidError("You need to be logged in to submit a bid");
+        setIsSubmittingBid(false);
+        return;
+      }
+
+      const response = await fetch(
+        "http://localhost:4000/api/influencers/bids",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            projectId: selectedProject._id,
+            amount: parseInt(bidData.price),
+            message: bidData.message,
+            duration: bidData.duration,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setBidSuccess("Bid submitted successfully!");
+        setBidData({
+          price: "",
+          message: "",
+          duration: "",
+        });
+        setTimeout(() => {
+          setShowBidForm(false);
+          setBidSuccess("");
+        }, 2000);
+      } else {
+        setBidError(data.message || "Failed to submit bid");
+      }
+    } catch (err) {
+      setBidError("Error connecting to server");
+      console.error("Error submitting bid:", err);
+    } finally {
+      setIsSubmittingBid(false);
+    }
   };
 
   const handleBidChange = (e) => {
@@ -251,6 +226,8 @@ const DiscoverPage = () => {
       message: "",
       duration: "",
     });
+    setBidError("");
+    setBidSuccess("");
   };
 
   const clearFilters = () => {
@@ -260,35 +237,75 @@ const DiscoverPage = () => {
     setSearchQuery("");
   };
 
+  const formatDate = (dateString) => {
+    const options = { day: "numeric", month: "short", year: "numeric" };
+    return new Date(dateString).toLocaleDateString("en-US", options);
+  };
+
+  const formatBudget = (project) => {
+    if (project.budgetMin && project.budgetMax) {
+      return `$${project.budgetMin} - $${project.budgetMax}`;
+    } else if (project.budgetMin) {
+      return `$${project.budgetMin}+`;
+    } else {
+      return "Budget not specified";
+    }
+  };
+
+  if (loading) {
+    return (
+      <main className="mt-20 bg-white text-gray-800 font-sans min-h-screen">
+        <Header />
+        <div className="flex justify-center items-center h-64">
+          <div className="text-xl">Loading projects...</div>
+        </div>
+        <Footer />
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="mt-20 bg-white text-gray-800 font-sans min-h-screen">
+        <Header />
+        <div className="flex justify-center items-center h-64">
+          <div className="text-xl text-red-500">{error}</div>
+        </div>
+        <Footer />
+      </main>
+    );
+  }
+
   return (
-    <main className="mt-20 bg-white text-gray-200 font-sans">
+    <main className="mt-20 bg-white text-gray-800 font-sans">
       <Header />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-16 bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 tracking-tight">
-              Discover <span className="text-white">Exclusive Projects</span>
-            </h1>
-            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-              Find and bid on premium freelance opportunities tailored to your
-              expertise and desired compensation.
-            </p>
-          </div>
+      <section className="pt-20 pb-16 bg-gradient-to-br from-slate-900/80 via-gray-800/80 to-black/80 text-white relative">
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
+          style={{ backgroundImage: "url('/ibanner1.jpg')", opacity: 0.5 }}
+        ></div>
 
-          {/* Search Bar */}
-          <div className="max-w-4xl mx-auto">
-            <div className="relative">
-              <MagnifyingGlassIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-6 w-6 text-gray-500" />
-              <input
-                type="text"
-                placeholder="Search projects by keywords or skills..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-14 pr-6 py-4 bg-gray-800 border border-gray-700 text-white rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent text-lg placeholder-gray-500 transition-colors"
-              />
-            </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <h1 className="text-4xl md:text-6xl font-bold font-serif text-white mb-6">
+            Discover Exclusive Projects
+          </h1>
+          <p className="text-xl text-white font-bold max-w-3xl mx-auto mb-8">
+            Find and bid on premium freelance opportunities tailored to your
+            expertise and desired compensation.
+          </p>
+        </div>
+        <div className="max-w-4xl mx-auto mt-8">
+          <div className="relative">
+            <MagnifyingGlassIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-6 w-6 text-gray-500" />
+            <input
+              type="text"
+              placeholder="Search projects by keywords or skills..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-14 pr-6 py-4 bg-gray-800 border border-gray-700 text-white rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-lg placeholder-gray-500 transition-colors"
+            />
           </div>
         </div>
       </section>
@@ -299,22 +316,22 @@ const DiscoverPage = () => {
           <div className="grid lg:grid-cols-4 gap-12">
             {/* Filters Sidebar */}
             <div className="lg:col-span-1">
-              <div className="bg-gray-800 rounded-2xl shadow-2xl p-8 sticky top-32 border border-gray-700">
-                <h3 className="text-2xl font-bold text-white mb-8 flex items-center">
-                  <FunnelIcon className="h-6 w-6 mr-3 text-gradient-to-r from-purple-600 to-pink-600" />
+              <div className="bg-gray-100 rounded-2xl shadow-lg p-8 sticky top-32 border border-gray-200">
+                <h3 className="text-2xl font-bold text-gray-800 mb-8 flex items-center">
+                  <FunnelIcon className="h-6 w-6 mr-3 text-purple-600" />
                   Filters
                 </h3>
 
                 {/* Date Filter */}
                 <div className="mb-8">
-                  <label className="block text-md font-semibold text-gray-300 mb-4 flex items-center">
-                    <CalendarIcon className="h-5 w-5 mr-3 text-gray-400" />
+                  <label className="block text-md font-semibold text-gray-700 mb-4 flex items-center">
+                    <CalendarIcon className="h-5 w-5 mr-3 text-gray-600" />
                     Date Posted
                   </label>
                   <select
                     value={selectedDate}
                     onChange={(e) => setSelectedDate(e.target.value)}
-                    className="w-full px-5 py-3 bg-gray-900 border border-gray-700 rounded-xl text-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                    className="w-full px-5 py-3 bg-white border border-gray-300 rounded-xl text-gray-700 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
                   >
                     {dateFilters.map((date) => (
                       <option key={date} value={date}>
@@ -326,14 +343,14 @@ const DiscoverPage = () => {
 
                 {/* Budget Filter */}
                 <div className="mb-8">
-                  <label className="block text-md font-semibold text-gray-300 mb-4 flex items-center">
-                    <CurrencyDollarIcon className="h-5 w-5 mr-3 text-gray-400" />
+                  <label className="block text-md font-semibold text-gray-700 mb-4 flex items-center">
+                    <CurrencyDollarIcon className="h-5 w-5 mr-3 text-gray-600" />
                     Budget
                   </label>
                   <select
                     value={selectedBudget}
                     onChange={(e) => setSelectedBudget(e.target.value)}
-                    className="w-full px-5 py-3 bg-gray-900 border border-gray-700 rounded-xl text-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                    className="w-full px-5 py-3 bg-white border border-gray-300 rounded-xl text-gray-700 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
                   >
                     {budgetRanges.map((budget) => (
                       <option key={budget} value={budget}>
@@ -345,14 +362,14 @@ const DiscoverPage = () => {
 
                 {/* Category Filter */}
                 <div className="mb-8">
-                  <label className="block text-md font-semibold text-gray-300 mb-4 flex items-center">
-                    <DocumentTextIcon className="h-5 w-5 mr-3 text-gray-400" />
+                  <label className="block text-md font-semibold text-gray-700 mb-4 flex items-center">
+                    <DocumentTextIcon className="h-5 w-5 mr-3 text-gray-600" />
                     Category
                   </label>
                   <select
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="w-full px-5 py-3 bg-gray-900 border border-gray-700 rounded-xl text-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                    className="w-full px-5 py-3 bg-white border border-gray-300 rounded-xl text-gray-700 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
                   >
                     {categories.map((category) => (
                       <option key={category} value={category}>
@@ -365,7 +382,7 @@ const DiscoverPage = () => {
                 {/* Clear Filter Button */}
                 <button
                   onClick={clearFilters}
-                  className="w-full px-6 py-3 text-sm font-semibold text-gray-300 border border-gray-700 rounded-xl hover:bg-gray-700 hover:text-white transition-colors duration-300"
+                  className="w-full px-6 py-3 text-sm font-semibold text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-200 transition-colors duration-300"
                 >
                   Clear Filters
                 </button>
@@ -376,12 +393,12 @@ const DiscoverPage = () => {
             <div className="lg:col-span-3">
               <div className="flex justify-between items-center mb-8">
                 <h2 className="text-xl font-bold text-gray-800">
-                  Showing {filteredProjects.length} of {projects.length}+
+                  Showing {filteredProjects.length} of {projects.length}{" "}
                   Projects
                 </h2>
                 <div className="flex gap-4 items-center">
-                  <span className="text-gray-800 border-black">Sort by:</span>
-                  <select className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-xl text-sm text-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                  <span className="text-gray-700">Sort by:</span>
+                  <select className="px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm text-gray-700 focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                     <option>Latest</option>
                     <option>Budget (High to Low)</option>
                     <option>Budget (Low to High)</option>
@@ -389,88 +406,104 @@ const DiscoverPage = () => {
                 </div>
               </div>
 
-              <div className="space-y-6">
-                {filteredProjects.map((project) => (
-                  <div
-                    key={project.id}
-                    className="bg-gray-800 rounded-2xl shadow-lg border border-gray-700 p-8 cursor-pointer hover:shadow-xl hover:border-primary-500 transition-all duration-300"
-                    onClick={() => handleProjectClick(project)}
-                  >
-                    <div className="flex justify-between items-start mb-6">
-                      <div className="flex-1">
-                        <h3 className="text-2xl font-bold text-white mb-2 leading-tight">
-                          {project.title}
-                        </h3>
-                        <p className="text-gray-400 mb-4 text-sm">
-                          {project.description}
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {project.skills.map((skill, index) => (
-                            <span
-                              key={index}
-                              className="px-4 py-1 bg-primary-900/50 text-white text-xs rounded-full border border-primary-500/20"
-                            >
-                              {skill}
-                            </span>
-                          ))}
+              {filteredProjects.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-gray-600 text-lg">
+                    No projects found matching your criteria.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {filteredProjects.map((project) => (
+                    <div
+                      key={project._id}
+                      className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 cursor-pointer hover:shadow-xl hover:border-purple-500 transition-all duration-300"
+                      onClick={() => handleProjectClick(project)}
+                    >
+                      <div className="flex justify-between items-start mb-6">
+                        <div className="flex-1">
+                          <h3 className="text-2xl font-bold text-gray-800 mb-2 leading-tight">
+                            {project.title}
+                          </h3>
+                          <p className="text-gray-600 mb-4 text-sm">
+                            {project.description}
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {project.niches &&
+                              project.niches.map((niche, index) => (
+                                <span
+                                  key={index}
+                                  className="px-4 py-1 bg-purple-100 text-purple-800 text-xs rounded-full border border-purple-200"
+                                >
+                                  {niche}
+                                </span>
+                              ))}
+                            {project.platforms &&
+                              project.platforms.map((platform, index) => (
+                                <span
+                                  key={index}
+                                  className="px-4 py-1 bg-blue-100 text-blue-800 text-xs rounded-full border border-blue-200"
+                                >
+                                  {platform}
+                                </span>
+                              ))}
+                          </div>
+                        </div>
+                        <div className="text-right ml-8">
+                          <div className="text-3xl font-bold text-purple-600 mb-1">
+                            {formatBudget(project)}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {formatDate(project.createdAt)}
+                          </div>
                         </div>
                       </div>
-                      <div className="text-right ml-8">
-                        <div className="text-3xl font-bold text-white mb-1">
-                          {project.budget}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {project.datePosted}
-                        </div>
-                      </div>
-                    </div>
 
-                    <div className="flex justify-between items-center pt-6 border-t border-gray-700">
-                      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-400">
-                        <div className="flex items-center gap-1">
-                          <UserIcon className="h-4 w-4" />
-                          <span className="font-medium text-gray-300">
-                            Client:
-                          </span>{" "}
-                          {project.client}
+                      <div className="flex justify-between items-center pt-6 border-t border-gray-200">
+                        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-600">
+                          <div className="flex items-center gap-1">
+                            <UserIcon className="h-4 w-4" />
+                            <span className="font-medium text-gray-700">
+                              Client:
+                            </span>{" "}
+                            {project.client?.name || "Unknown Client"}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <ClockIcon className="h-4 w-4" />
+                            <span className="font-medium text-gray-700">
+                              Status:
+                            </span>{" "}
+                            <span
+                              className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                project.status === "open"
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-gray-100 text-gray-800"
+                              }`}
+                            >
+                              {project.status?.charAt(0).toUpperCase() +
+                                project.status?.slice(1)}
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-1">
-                          <MapPinIcon className="h-4 w-4" />
-                          <span className="font-medium text-gray-300">
-                            Location:
-                          </span>{" "}
-                          {project.location}
+                        <div className="ml-4">
+                          <button className="px-6 py-2 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-colors duration-300">
+                            View Details
+                          </button>
                         </div>
-                        <div className="flex items-center gap-1">
-                          <ClockIcon className="h-4 w-4" />
-                          <span className="font-medium text-gray-300">
-                            Duration:
-                          </span>{" "}
-                          {project.duration}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <span className="font-medium text-gray-300">
-                            Proposals:
-                          </span>{" "}
-                          {project.proposals}
-                        </div>
-                      </div>
-                      <div className="ml-4">
-                        <button className="px-6 py-2 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg hover:bg-primary-700 transition-colors duration-300">
-                          View Details
-                        </button>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
 
               {/* Load More Button */}
-              <div className="text-center mt-12">
-                <button className="px-8 py-3 text-sm font-semibold  text-gray-800 border border-gray-700 rounded-xl hover:bg-gradient-to-r from-purple-600 to-pink-600 hover:text-white transition-colors duration-300">
-                  Load More Projects
-                </button>
-              </div>
+              {filteredProjects.length > 0 && (
+                <div className="text-center mt-12">
+                  <button className="px-8 py-3 text-sm font-semibold text-gray-700 border border-gray-300 rounded-xl hover:bg-gradient-to-r from-purple-600 to-pink-600 hover:text-white transition-colors duration-300">
+                    Load More Projects
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -478,16 +511,16 @@ const DiscoverPage = () => {
 
       {/* Project Details Modal */}
       {selectedProject && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-gray-900 rounded-3xl max-w-5xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-700 transform scale-95 animate-zoom-in">
-            <div className="p-8 border-b border-gray-700">
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl max-w-5xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-200">
+            <div className="p-8 border-b border-gray-200">
               <div className="flex justify-between items-start">
-                <h2 className="text-3xl font-bold text-white leading-tight">
+                <h2 className="text-3xl font-bold text-gray-800 leading-tight">
                   {selectedProject.title}
                 </h2>
                 <button
                   onClick={closeModal}
-                  className="text-gray-500 hover:text-white transition-colors duration-200"
+                  className="text-gray-500 hover:text-gray-700 transition-colors duration-200"
                 >
                   <XMarkIcon className="h-8 w-8" />
                 </button>
@@ -499,47 +532,52 @@ const DiscoverPage = () => {
               <div className="md:col-span-2">
                 {/* Project Description */}
                 <div className="mb-8">
-                  <h3 className="text-xl font-bold text-white mb-4">
+                  <h3 className="text-xl font-bold text-gray-800 mb-4">
                     Project Description
                   </h3>
-                  <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 text-gray-300">
+                  <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 text-gray-700">
                     <p className="whitespace-pre-line leading-relaxed">
-                      {selectedProject.fullDescription}
+                      {selectedProject.description ||
+                        "No description provided."}
                     </p>
                   </div>
                 </div>
 
                 {/* Required Skills */}
                 <div className="mb-8">
-                  <h3 className="text-xl font-bold text-white mb-4">
-                    Required Skills
+                  <h3 className="text-xl font-bold text-gray-800 mb-4">
+                    Project Details
                   </h3>
                   <div className="flex flex-wrap gap-3">
-                    {selectedProject.skills.map((skill, index) => (
-                      <span
-                        key={index}
-                        className="px-4 py-2 bg-primary-900/50 text-white text-sm rounded-full border border-primary-500/20 font-medium"
-                      >
-                        {skill}
-                      </span>
-                    ))}
+                    {selectedProject.niches &&
+                      selectedProject.niches.map((niche, index) => (
+                        <span
+                          key={index}
+                          className="px-4 py-2 bg-purple-100 text-purple-800 text-sm rounded-full border border-purple-200 font-medium"
+                        >
+                          {niche}
+                        </span>
+                      ))}
+                    {selectedProject.platforms &&
+                      selectedProject.platforms.map((platform, index) => (
+                        <span
+                          key={index}
+                          className="px-4 py-2 bg-blue-100 text-blue-800 text-sm rounded-full border border-blue-200 font-medium"
+                        >
+                          {platform}
+                        </span>
+                      ))}
                   </div>
                 </div>
 
-                <div className="flex justify-between items-center pt-6 border-t border-gray-700">
-                  <div className="text-sm text-gray-500">
-                    <span className="font-semibold text-gray-400">
-                      Proposals:
-                    </span>{" "}
-                    {selectedProject.proposals} •{" "}
-                    <span className="font-semibold text-gray-400 ml-2">
-                      Posted:
-                    </span>{" "}
-                    {selectedProject.datePosted}
+                <div className="flex justify-between items-center pt-6 border-t border-gray-200">
+                  <div className="text-sm text-gray-600">
+                    <span className="font-semibold text-gray-700">Posted:</span>{" "}
+                    {formatDate(selectedProject.createdAt)}
                   </div>
                   <button
                     onClick={() => setShowBidForm(!showBidForm)}
-                    className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors duration-300"
+                    className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-pink-700 transition-colors duration-300"
                   >
                     {showBidForm ? "Hide Bid Form" : "Bid Now"}
                   </button>
@@ -548,46 +586,29 @@ const DiscoverPage = () => {
 
               {/* Right Column - Info Panel */}
               <div className="md:col-span-1">
-                <div className="bg-gray-800 rounded-2xl p-6 border border-gray-700 space-y-6">
+                <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200 space-y-6">
                   {/* Project Summary */}
                   <div>
-                    <h3 className="text-lg font-bold text-white mb-4 border-b border-gray-700 pb-2">
+                    <h3 className="text-lg font-bold text-gray-800 mb-4 border-b border-gray-200 pb-2">
                       Project Summary
                     </h3>
-                    <div className="space-y-3 text-gray-400">
+                    <div className="space-y-3 text-gray-700">
                       <div className="flex items-center">
-                        <CurrencyDollarIcon className="h-5 w-5 text-gray-500 mr-3" />
+                        <CurrencyDollarIcon className="h-5 w-5 text-gray-600 mr-3" />
                         <span>
                           Budget:{" "}
-                          <span className="font-semibold text-white">
-                            {selectedProject.budget}
+                          <span className="font-semibold text-gray-800">
+                            {formatBudget(selectedProject)}
                           </span>
                         </span>
                       </div>
                       <div className="flex items-center">
-                        <ClockIcon className="h-5 w-5 text-gray-500 mr-3" />
+                        <DocumentTextIcon className="h-5 w-5 text-gray-600 mr-3" />
                         <span>
-                          Duration:{" "}
-                          <span className="font-semibold text-white">
-                            {selectedProject.duration}
-                          </span>
-                        </span>
-                      </div>
-                      <div className="flex items-center">
-                        <UserIcon className="h-5 w-5 text-gray-500 mr-3" />
-                        <span>
-                          Experience Level:{" "}
-                          <span className="font-semibold text-white">
-                            {selectedProject.experience}
-                          </span>
-                        </span>
-                      </div>
-                      <div className="flex items-center">
-                        <DocumentTextIcon className="h-5 w-5 text-gray-500 mr-3" />
-                        <span>
-                          Project Type:{" "}
-                          <span className="font-semibold text-white">
-                            {selectedProject.projectType}
+                          Status:{" "}
+                          <span className="font-semibold text-gray-800">
+                            {selectedProject.status?.charAt(0).toUpperCase() +
+                              selectedProject.status?.slice(1)}
                           </span>
                         </span>
                       </div>
@@ -596,43 +617,16 @@ const DiscoverPage = () => {
 
                   {/* Client Information */}
                   <div>
-                    <h3 className="text-lg font-bold text-white mb-4 border-b border-gray-700 pb-2">
+                    <h3 className="text-lg font-bold text-gray-800 mb-4 border-b border-gray-200 pb-2">
                       Client Information
                     </h3>
-                    <div className="space-y-3 text-gray-400">
+                    <div className="space-y-3 text-gray-700">
                       <div className="flex items-center">
-                        <UserIcon className="h-5 w-5 text-gray-500 mr-3" />
+                        <UserIcon className="h-5 w-5 text-gray-600 mr-3" />
                         <span>
                           Client:{" "}
-                          <span className="font-semibold text-white">
-                            {selectedProject.client}
-                          </span>
-                        </span>
-                      </div>
-                      <div className="flex items-center">
-                        <MapPinIcon className="h-5 w-5 text-gray-500 mr-3" />
-                        <span>
-                          Location:{" "}
-                          <span className="font-semibold text-white">
-                            {selectedProject.location}
-                          </span>
-                        </span>
-                      </div>
-                      <div className="flex items-center">
-                        <StarIcon className="h-5 w-5 text-yellow-400 mr-3" />
-                        <span>
-                          Rating:{" "}
-                          <span className="font-semibold text-white">
-                            {selectedProject.clientRating}
-                          </span>
-                        </span>
-                      </div>
-                      <div className="flex items-center">
-                        <CurrencyDollarIcon className="h-5 w-5 text-gray-500 mr-3" />
-                        <span>
-                          Total Spent:{" "}
-                          <span className="font-semibold text-white">
-                            {selectedProject.totalSpent}
+                          <span className="font-semibold text-gray-800">
+                            {selectedProject.client?.name || "Unknown Client"}
                           </span>
                         </span>
                       </div>
@@ -645,14 +639,28 @@ const DiscoverPage = () => {
             {/* Bid Form in Modal */}
             {showBidForm && (
               <div className="p-8 pt-0">
-                <div className="mt-8 pt-8 border-t border-gray-700">
-                  <h3 className="text-xl font-bold text-white mb-6">
+                <div className="mt-8 pt-8 border-t border-gray-200">
+                  <h3 className="text-xl font-bold text-gray-800 mb-6">
                     Submit Your Bid
                   </h3>
+
+                  {/* Success/Error Messages */}
+                  {bidSuccess && (
+                    <div className="mb-6 p-4 bg-green-100 text-green-700 rounded-lg">
+                      {bidSuccess}
+                    </div>
+                  )}
+
+                  {bidError && (
+                    <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-lg">
+                      {bidError}
+                    </div>
+                  )}
+
                   <form onSubmit={handleBidSubmit} className="space-y-6">
                     <div className="grid md:grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-sm font-semibold text-gray-300 mb-2">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
                           Your Bid Price ($)
                         </label>
                         <input
@@ -661,19 +669,20 @@ const DiscoverPage = () => {
                           value={bidData.price}
                           onChange={handleBidChange}
                           placeholder="Enter your bid amount"
-                          className="w-full px-5 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors placeholder-gray-500"
+                          className="w-full px-5 py-3 bg-white border border-gray-300 rounded-xl text-gray-800 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors placeholder-gray-500"
                           required
+                          min="1"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-gray-300 mb-2">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
                           Estimated Duration
                         </label>
                         <select
                           name="duration"
                           value={bidData.duration}
                           onChange={handleBidChange}
-                          className="w-full px-5 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                          className="w-full px-5 py-3 bg-white border border-gray-300 rounded-xl text-gray-800 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
                           required
                         >
                           <option value="">Select duration</option>
@@ -689,7 +698,7 @@ const DiscoverPage = () => {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-300 mb-2">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
                         Proposal Message
                       </label>
                       <textarea
@@ -698,21 +707,22 @@ const DiscoverPage = () => {
                         onChange={handleBidChange}
                         rows={5}
                         placeholder="Describe your approach, experience, and why you're the best fit for this project..."
-                        className="w-full px-5 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors placeholder-gray-500"
+                        className="w-full px-5 py-3 bg-white border border-gray-300 rounded-xl text-gray-800 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors placeholder-gray-500"
                         required
                       />
                     </div>
                     <div className="flex gap-4">
                       <button
                         type="submit"
-                        className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors duration-300"
+                        disabled={isSubmittingBid}
+                        className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-pink-700 transition-colors duration-300 disabled:opacity-50"
                       >
-                        Submit Bid
+                        {isSubmittingBid ? "Submitting..." : "Submit Bid"}
                       </button>
                       <button
                         type="button"
                         onClick={() => setShowBidForm(false)}
-                        className="px-8 py-3 text-gray-300 font-semibold border border-gray-700 rounded-lg hover:bg-gray-700 transition-colors duration-300"
+                        className="px-8 py-3 text-gray-700 font-semibold border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors duration-300"
                       >
                         Cancel
                       </button>

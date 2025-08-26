@@ -179,7 +179,7 @@ const Brands = () => {
                 <div className="mt-auto pt-4 border-t border-gray-200 group-hover:border-primary-100 transition-colors duration-300">
                   <Link
                     href={`/brand/${brand.id}`}
-                    className="block w-full text-center px-4 py-2.5 bg-gradient-to-r from-primary-500 to-primary-400 text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-300 transform group-hover:scale-[1.02]"
+                    className="block w-full text-center px-4 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-300 transform group-hover:scale-[1.02]"
                   >
                     View Opportunities
                   </Link>

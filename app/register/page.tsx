@@ -12,6 +12,10 @@ const RegisterPage = () => {
   const [userType, setUserType] = useState<"influencer" | "brand">(
     "influencer"
   );
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -25,10 +29,74 @@ const RegisterPage = () => {
     company: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle registration logic here
-    console.log("Registration attempt:", { ...formData, userType });
+    setError("");
+    setIsLoading(true);
+
+    // Validate passwords match
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      setIsLoading(false);
+      return;
+    }
+
+    // Validate password strength
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    if (!passwordRegex.test(formData.password)) {
+      setError(
+        "Password must be at least 8 characters with uppercase, lowercase, and number"
+      );
+      setIsLoading(false);
+      return;
+    }
+
+    // Validate terms agreement
+    if (!formData.agreeToTerms) {
+      setError("You must agree to the Terms of Service and Privacy Policy");
+      setIsLoading(false);
+      return;
+    }
+
+    // Prepare data for API
+    const fullName = `${formData.firstName} ${formData.lastName}`;
+    const role = userType === "influencer" ? "influencer" : "client";
+
+    const apiData = {
+      name: fullName,
+      email: formData.email,
+      password: formData.password,
+      role: role,
+    };
+
+    try {
+      const response = await fetch("http://localhost:4000/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(apiData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Registration successful
+        setSuccess(true);
+        // You might want to store the token and user data (e.g., in context or localStorage)
+        console.log("Registration successful:", data);
+
+        // Redirect or perform other actions upon successful registration
+      } else {
+        // Handle API errors
+        setError(data.message || "Registration failed. Please try again.");
+      }
+    } catch (err) {
+      setError("Network error. Please check your connection and try again.");
+      console.error("Registration error:", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChange = (
@@ -42,8 +110,50 @@ const RegisterPage = () => {
     }));
   };
 
+  // If registration was successful, show success message
+  if (success) {
+    return (
+      <div className="mt-20 flex flex-col min-h-screen">
+        <Header />
+        <main className="flex-grow bg-gradient-to-br from-primary-50 to-secondary-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg
+                className="w-8 h-8 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M5 13l4 4L19 7"
+                ></path>
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Registration Successful!
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Your account has been created successfully. You can now sign in to
+              your account.
+            </p>
+            <Link
+              href="/login"
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+            >
+              Go to Login
+            </Link>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
-    <div className="mt-20 flex flex-col">
+    <div className="mt-20 flex flex-col min-h-screen">
       <Header />
 
       <main className="flex-grow bg-gradient-to-br from-primary-50 to-secondary-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -69,6 +179,30 @@ const RegisterPage = () => {
               Join thousands of influencers and brands
             </p>
           </div>
+
+          {/* Error message */}
+          {error && (
+            <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg
+                    className="h-5 w-5 text-red-400"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-red-700">{error}</p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Registration Form */}
           <div className="bg-white rounded-2xl shadow-xl p-8">
@@ -259,7 +393,6 @@ const RegisterPage = () => {
                     id="niche"
                     name="niche"
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    required
                     value={formData.niche}
                     onChange={handleChange}
                   >
@@ -290,7 +423,6 @@ const RegisterPage = () => {
                     id="company"
                     name="company"
                     type="text"
-                    required
                     value={formData.company}
                     onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
@@ -352,9 +484,10 @@ const RegisterPage = () => {
               <div>
                 <button
                   type="submit"
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                  disabled={isLoading}
+                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Create account
+                  {isLoading ? "Creating account..." : "Create account"}
                 </button>
               </div>
             </form>

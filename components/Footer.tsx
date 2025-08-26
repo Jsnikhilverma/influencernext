@@ -8,24 +8,25 @@ const Footer = () => {
 
   const footerLinks = {
     platform: [
-      { name: "Discover", href: "/discover" },
-      { name: "Categories", href: "/categories" },
+      { name: "Browse Projects", href: "/discover" },
+      { name: "Discover influencers ", href: "/influencers" },
       { name: "Brands", href: "/brands" },
       { name: "Pricing", href: "/pricing" },
-      { name: "Success Stories", href: "/success-stories" },
+      // { name: "Success Stories", href: "/success-stories" },
     ],
-    resources: [
-      { name: "Help Center", href: "/help" },
-      { name: "Blog", href: "/blog" },
-      { name: "Community", href: "/community" },
-      { name: "API Documentation", href: "/api" },
-      { name: "Privacy Policy", href: "/privacy" },
-    ],
+    // resources: [
+    //   { name: "Help Center", href: "/help" },
+    //   { name: "Blog", href: "/blog" },
+    //   { name: "Community", href: "/community" },
+    //   { name: "API Documentation", href: "/api" },
+    //   { name: "Privacy Policy", href: "/privacy" },
+    // ],
     company: [
       { name: "About Us", href: "/about" },
-      { name: "Careers", href: "/careers" },
-      { name: "Press", href: "/press" },
+      // { name: "Careers", href: "/careers" },
+      // { name: "Press", href: "/press" },
       { name: "Contact", href: "/contact" },
+      { name: "Privacy Policy", href: "/privacy" },
       { name: "Terms of Service", href: "/terms" },
     ],
     support: [
@@ -47,7 +48,7 @@ const Footer = () => {
   return (
     <footer className="bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Logo and Description */}
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
@@ -93,7 +94,7 @@ const Footer = () => {
           </div>
 
           {/* Resources Links */}
-          <div>
+          {/* <div>
             <h3 className="text-lg font-semibold mb-4">Resources</h3>
             <ul className="space-y-2">
               {footerLinks.resources.map((link) => (
@@ -107,7 +108,7 @@ const Footer = () => {
                 </li>
               ))}
             </ul>
-          </div>
+          </div> */}
 
           {/* Company Links */}
           <div>
@@ -128,7 +129,7 @@ const Footer = () => {
         </div>
 
         {/* Newsletter Signup */}
-        <div className="mt-12 pt-8 border-t border-gray-800">
+        {/* <div className="mt-12 pt-8 border-t border-gray-800">
           <div className="max-w-md">
             <h3 className="text-lg font-semibold mb-2">Stay Updated</h3>
             <p className="text-gray-400 mb-4">
@@ -146,14 +147,14 @@ const Footer = () => {
               </button>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Bottom Bar */}
         <div className="mt-8 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
           <div className="text-gray-400 text-sm">
             © {currentYear} InfluenceHub. All rights reserved.
           </div>
-          <div className="flex space-x-6 mt-4 md:mt-0">
+          {/* <div className="flex space-x-6 mt-4 md:mt-0">
             <Link
               href="/privacy"
               className="text-gray-400 hover:text-white text-sm transition-colors duration-200"
@@ -172,7 +173,7 @@ const Footer = () => {
             >
               Cookie Policy
             </Link>
-          </div>
+          </div> */}
         </div>
       </div>
     </footer>

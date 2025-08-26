@@ -1,94 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-
-const influencers = [
-  {
-    id: 1,
-    name: "Sarah Johnson",
-    handle: "@sarahjohnson",
-    niche: "Fashion & Beauty",
-    followers: "2.1M",
-    engagement: "8.5%",
-    earnings: "$45K",
-    avatar:
-      "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
-    verified: true,
-    tier: "Diamond",
-    growth: "+12.3%",
-  },
-  {
-    id: 2,
-    name: "Mike Chen",
-    handle: "@mikechen_tech",
-    niche: "Technology",
-    followers: "1.8M",
-    engagement: "12.3%",
-    earnings: "$38K",
-    avatar:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
-    verified: true,
-    tier: "Platinum",
-    growth: "+8.7%",
-  },
-  {
-    id: 3,
-    name: "Emma Rodriguez",
-    handle: "@emmafitness",
-    niche: "Fitness & Health",
-    followers: "950K",
-    engagement: "15.7%",
-    earnings: "$32K",
-    avatar:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
-    verified: true,
-    tier: "Gold",
-    growth: "+15.2%",
-  },
-  {
-    id: 4,
-    name: "Alex Thompson",
-    handle: "@alexcooks",
-    niche: "Food & Cooking",
-    followers: "1.2M",
-    engagement: "9.2%",
-    earnings: "$28K",
-    avatar:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
-    verified: false,
-    tier: "Silver",
-    growth: "+6.1%",
-  },
-  {
-    id: 5,
-    name: "Lisa Park",
-    handle: "@lisatravels",
-    niche: "Travel",
-    followers: "1.5M",
-    engagement: "11.8%",
-    earnings: "$35K",
-    avatar:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=688&q=80",
-    verified: true,
-    tier: "Platinum",
-    growth: "+9.4%",
-  },
-  {
-    id: 6,
-    name: "David Kim",
-    handle: "@davidgaming",
-    niche: "Gaming",
-    followers: "2.3M",
-    engagement: "13.4%",
-    earnings: "$52K",
-    avatar:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
-    verified: true,
-    tier: "Diamond",
-    growth: "+11.8%",
-  },
-];
 
 const getTierColor = (tier) => {
   const colors = {
@@ -115,8 +28,83 @@ const getTierIcon = (tier) => {
   }
 };
 
+// Helper function to format numbers with K/M suffixes
+const formatNumber = (num) => {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + "M";
+  } else if (num >= 1000) {
+    return (num / 1000).toFixed(1) + "K";
+  }
+  return num.toString();
+};
+
 const TopInfluencers = () => {
+  const [influencers, setInfluencers] = useState([]);
   const [hoveredCard, setHoveredCard] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchInfluencers = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/api/influencers");
+        if (!response.ok) {
+          throw new Error("Failed to fetch influencers");
+        }
+        const data = await response.json();
+
+        // Map API data to match our expected format
+        const mappedInfluencers = data.influencers.map((influencer, index) => ({
+          id: influencer._id,
+          name: influencer.name,
+          handle: `@${influencer.slug}`,
+          niche:
+            influencer.niches.length > 0 ? influencer.niches[0] : "General",
+          followers: formatNumber(influencer.stats.followers),
+          engagement: `${influencer.stats.engagementRate || 0}%`,
+          earnings: "$0", // Not provided in API
+          avatar: `https://images.unsplash.com/photo-${
+            index % 2 === 0
+              ? "1494790108755-2616b612b786"
+              : "1507003211169-0a1dd7228f2d"
+          }?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80`,
+          verified: index % 2 === 0, // Random verification status
+          tier: ["Diamond", "Platinum", "Gold", "Silver"][index % 4],
+          growth: `+${(Math.random() * 15 + 5).toFixed(1)}%`, // Random growth
+        }));
+
+        setInfluencers(mappedInfluencers);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchInfluencers();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="relative py-24 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-20">
+          <div className="text-white text-xl">Loading influencers...</div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="relative py-24 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-20">
+          <div className="text-white text-xl">Error: {error}</div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="relative py-24 overflow-hidden">
@@ -126,29 +114,15 @@ const TopInfluencers = () => {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Luxury Header */}
         <div className="text-center mb-16">
-          {/* <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500/10 to-blue-500/10 backdrop-blur-sm border border-white/10 rounded-full px-6 py-2 mb-6">
-            <span className="text-2xl">👑</span>
-            <span className="text-sm font-medium text-white/80 tracking-wide uppercase">
-              Elite Creators
-            </span>
-          </div> */}
-
           <h2 className="text-5xl md:text-7xl font-bold mb-6">
             <span className="bg-gradient-to-r from-white via-purple-200 to-white bg-clip-text text-transparent">
               Top Influencers
             </span>
           </h2>
 
-          {/* <p className="text-xl md:text-2xl text-white/70 max-w-3xl mx-auto leading-relaxed">
-            Meet the visionaries shaping the future of digital influence and
-            creativity
-          </p> */}
-
-          {/* View All Button */}
-
           <div className="mt-10">
             <Link href="/influencers">
-              <button className="group relative inline-flex items-center gap-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25">
+              <button className="group relative inline-flex items-center gap-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-blue-700 hover:text-white px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25">
                 <span>Explore All Creators</span>
                 <svg
                   className="w-5 h-5 transition-transform group-hover:translate-x-1"
@@ -171,7 +145,7 @@ const TopInfluencers = () => {
 
         {/* Influencer Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {influencers.map((influencer) => (
+          {influencers.slice(0, 3).map((influencer) => (
             <div
               key={influencer.id}
               className="group relative"
@@ -187,18 +161,6 @@ const TopInfluencers = () => {
 
               {/* Main Card */}
               <div className="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 transition-all duration-500 group-hover:bg-white/10 group-hover:border-white/20 group-hover:transform group-hover:scale-[1.02]">
-                {/* Tier Badge */}
-                {/* <div className="absolute top-6 right-6">
-                  <div
-                    className={`flex items-center gap-2 bg-gradient-to-r ${getTierColor(
-                      influencer.tier
-                    )} px-3 py-1 rounded-full text-white text-sm font-semibold shadow-lg`}
-                  >
-                    <span>{getTierIcon(influencer.tier)}</span>
-                    <span>{influencer.tier}</span>
-                  </div>
-                </div> */}
-
                 {/* Profile Section */}
                 <div className="flex items-center mb-8">
                   <div className="relative">
@@ -286,28 +248,6 @@ const TopInfluencers = () => {
                   </div>
                 </div>
 
-                {/* Action Button */}
-                {/* <div className="mt-8 pt-6 border-t border-white/10">
-                  <button className="w-full group/btn relative overflow-hidden bg-gradient-to-r from-purple-600/20 to-blue-600/20 hover:from-purple-600 hover:to-blue-600 border border-purple-400/30 hover:border-transparent text-white hover:text-white px-6 py-4 rounded-2xl font-semibold transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/25">
-                    <span className="relative z-10 flex items-center justify-center gap-2">
-                      View Profile
-                      <svg
-                        className="w-5 h-5 transition-transform group-hover/btn:translate-x-1"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M13 7l5 5m0 0l-5 5m5-5H6"
-                        />
-                      </svg>
-                    </span>
-                  </button>
-                </div> */}
-
                 {/* Floating particles effect on hover */}
                 {hoveredCard === influencer.id && (
                   <div className="absolute inset-0 pointer-events-none">
@@ -320,18 +260,6 @@ const TopInfluencers = () => {
             </div>
           ))}
         </div>
-
-        {/* Bottom CTA */}
-        {/* <div className="text-center mt-20">
-          <div className="inline-flex items-center gap-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl px-8 py-4">
-            <span className="text-white/70">
-              Want to join our elite creators?
-            </span>
-            <button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition-all duration-300 hover:shadow-lg">
-              Apply Now
-            </button>
-          </div>
-        </div> */}
       </div>
 
       <style jsx>{`

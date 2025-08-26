@@ -137,19 +137,13 @@ const BrandsPage = () => {
       <Header />
 
       {/* Hero Section */}
-      <section className="pt-20 pb-12 bg-gradient-to-br from-slate-900 via-gray-800 to-black text-white">
+      {/* <section className="pt-20 pb-12 bg-gradient-to-br from-slate-900 via-gray-800 to-black text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold font-serif text-white mb-6">
-              Partner with Top Brands
-            </h1>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
-              Connect with verified brands looking for authentic influencers to
-              promote their products and services. Find opportunities that align
-              with your values and audience.
-            </p>
+            <h1 className="text-4xl md:text-6xl font-bold font-serif text-white mb-6"></h1>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8"></p>
 
-            {/* Search and Filter */}
+          
             <div className="max-w-4xl mx-auto">
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="relative flex-1">
@@ -176,6 +170,26 @@ const BrandsPage = () => {
               </div>
             </div>
           </div>
+        </div>
+      </section> */}
+
+      <section className="pt-20 pb-16 bg-gradient-to-br from-slate-900/80 via-gray-800/80 to-black/80 text-white relative">
+        {/* Background image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
+          style={{ backgroundImage: "url('/ibanner1.jpg')", opacity: 50 }}
+        ></div>
+
+        {/* Content */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <h1 className="text-4xl md:text-6xl font-bold font-serif text-black mb-6">
+            Partner with Top Brands
+          </h1>
+          <p className="text-xl text-black font-bold max-w-3xl mx-auto mb-8">
+            Connect with verified brands looking for authentic influencers to
+            promote their products and services. Find opportunities that align
+            with your values and audience.
+          </p>
         </div>
       </section>
 

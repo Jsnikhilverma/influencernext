@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import {
@@ -21,7 +21,10 @@ import {
 
 // Helper function to parse follower count string to a number
 const parseFollowerCount = (followers) => {
-  if (typeof followers !== "string") return 0;
+  if (typeof followers !== "string" && typeof followers !== "number") return 0;
+
+  if (typeof followers === "number") return followers;
+
   if (followers.endsWith("M")) {
     return parseFloat(followers) * 1_000_000;
   }
@@ -43,19 +46,23 @@ const InfluencerPage = () => {
     email: "",
     message: "",
   });
+  const [influencers, setInfluencers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const categories = [
     "All",
+    "Tech",
     "Fashion",
     "Beauty",
     "Lifestyle",
     "Travel",
     "Fitness",
     "Food",
-    "Tech",
     "Gaming",
     "Parenting",
     "Business",
+    "Reviews",
   ];
 
   const followerRanges = [
@@ -69,201 +76,58 @@ const InfluencerPage = () => {
 
   const dateFilters = ["All", "Recently Active", "Last Week", "Last Month"];
 
-  const influencers = [
-    {
-      id: 1,
-      name: "Emma Johnson",
-      category: "Fashion",
-      followers: "250K",
-      engagement: "4.8%",
-      description: "Fashion influencer specializing in sustainable brands",
-      fullDescription:
-        "Emma Johnson is a sustainable fashion influencer with a passion for eco-friendly brands. She creates content around ethical fashion choices, thrifting tips, and how to build a sustainable wardrobe. With 5 years of experience in the fashion industry, she partners with brands that align with her values of sustainability and ethical production.",
-      platforms: ["Instagram", "TikTok", "YouTube"],
-      location: "Los Angeles, USA",
-      contactEmail: "emma.johnson@example.com",
-      contactPhone: "+1 (555) 123-4567",
-      website: "www.emmajohnsonstyle.com",
-      verified: true,
-      profileImage: "https://randomuser.me/api/portraits/women/44.jpg",
-      audienceDemographics: {
-        age: "18-34",
-        gender: "85% Female",
-        topLocations: ["USA", "UK", "Canada"],
-      },
-      rates: {
-        instagramPost: "$1,200",
-        instagramStory: "$800",
-        tiktokVideo: "$1,500",
-        youtubeVideo: "$3,000",
-      },
-      contentExamples: [
-        "Sustainable outfit challenges",
-        "Thrift shopping vlogs",
-        "Brand collaborations",
-      ],
-    },
-    {
-      id: 2,
-      name: "Alex Chen",
-      category: "Tech",
-      followers: "420K",
-      engagement: "5.2%",
-      description: "Tech reviewer and gadget enthusiast",
-      fullDescription:
-        "Alex Chen provides honest tech reviews and gadget tutorials. His content focuses on helping consumers make informed decisions about their tech purchases. Specializing in smartphones, laptops, and smart home devices, Alex has built a reputation for thorough, unbiased reviews.",
-      platforms: ["YouTube", "Twitter", "Instagram"],
-      location: "San Francisco, USA",
-      contactEmail: "alex.chen@example.com",
-      contactPhone: "+1 (555) 987-6543",
-      website: "www.alextechreviews.com",
-      verified: true,
-      profileImage: "https://randomuser.me/api/portraits/men/32.jpg",
-      audienceDemographics: {
-        age: "18-45",
-        gender: "70% Male",
-        topLocations: ["USA", "India", "Germany"],
-      },
-      rates: {
-        youtubeVideo: "$4,500",
-        sponsoredPost: "$2,000",
-        productFeature: "$1,800",
-      },
-      contentExamples: [
-        "In-depth product reviews",
-        "Tech comparison videos",
-        "How-to guides",
-      ],
-    },
-    {
-      id: 3,
-      name: "Sophia Rodriguez",
-      category: "Travel",
-      followers: "1.2M",
-      engagement: "6.1%",
-      description: "Luxury travel influencer and photographer",
-      fullDescription:
-        "Sophia Rodriguez showcases luxury travel destinations around the world through stunning photography and engaging vlogs. Her content highlights hidden gems, luxury resorts, and unique cultural experiences. With partnerships with major tourism boards and hotel chains, Sophia creates aspirational yet accessible travel content.",
-      platforms: ["Instagram", "YouTube", "Blog"],
-      location: "Miami, USA",
-      contactEmail: "sophia.travel@example.com",
-      contactPhone: "+1 (555) 456-7890",
-      website: "www.sophiaspassport.com",
-      verified: true,
-      profileImage: "https://randomuser.me/api/portraits/women/63.jpg",
-      audienceDemographics: {
-        age: "25-45",
-        gender: "65% Female",
-        topLocations: ["USA", "UK", "Australia"],
-      },
-      rates: {
-        instagramPost: "$3,500",
-        youtubeVideo: "$6,000",
-        blogFeature: "$2,500",
-      },
-      contentExamples: [
-        "Hotel and resort tours",
-        "Destination guides",
-        "Travel photography tips",
-      ],
-    },
-    {
-      id: 4,
-      name: "James Wilson",
-      category: "Fitness",
-      followers: "780K",
-      engagement: "5.5%",
-      description: "Fitness coach and nutrition expert",
-      fullDescription:
-        "James Wilson is a certified personal trainer and nutrition coach who creates science-based fitness content. His programs focus on sustainable weight loss, muscle building, and overall wellness. James partners with fitness apparel and supplement brands that align with his evidence-based approach to health.",
-      platforms: ["Instagram", "TikTok", "YouTube"],
-      location: "Toronto, Canada",
-      contactEmail: "james.fitness@example.com",
-      contactPhone: "+1 (416) 555-1234",
-      website: "www.jamesfit.com",
-      verified: false,
-      profileImage: "https://randomuser.me/api/portraits/men/75.jpg",
-      audienceDemographics: {
-        age: "18-40",
-        gender: "60% Male",
-        topLocations: ["Canada", "USA", "UK"],
-      },
-      rates: {
-        instagramPost: "$2,000",
-        tiktokVideo: "$2,500",
-        programPromotion: "$3,500",
-      },
-      contentExamples: [
-        "Workout routines",
-        "Nutrition guides",
-        "Transformation stories",
-      ],
-    },
-    {
-      id: 5,
-      name: "Priya Patel",
-      category: "Beauty",
-      followers: "350K",
-      engagement: "7.2%",
-      description: "Makeup artist and skincare specialist",
-      fullDescription:
-        "Priya Patel is a professional makeup artist specializing in bridal and editorial looks. Her content focuses on makeup tutorials, product reviews, and skincare routines for diverse skin types. Priya partners with beauty brands that prioritize inclusivity and quality ingredients.",
-      platforms: ["Instagram", "YouTube", "Pinterest"],
-      location: "London, UK",
-      contactEmail: "priya.beauty@example.com",
-      contactPhone: "+44 20 7946 0958",
-      website: "www.priyasbeautydiary.com",
-      verified: true,
-      profileImage: "https://randomuser.me/api/portraits/women/68.jpg",
-      audienceDemographics: {
-        age: "18-35",
-        gender: "95% Female",
-        topLocations: ["UK", "USA", "India"],
-      },
-      rates: {
-        instagramPost: "$1,800",
-        youtubeTutorial: "$2,800",
-        productReview: "$1,500",
-      },
-      contentExamples: [
-        "Makeup tutorials",
-        "Skincare routines",
-        "Product comparisons",
-      ],
-    },
-    {
-      id: 6,
-      name: "Marcus Lee",
-      category: "Gaming",
-      followers: "2.5M",
-      engagement: "8.3%",
-      description: "Professional gamer and esports commentator",
-      fullDescription:
-        "Marcus Lee is a professional gamer known for his expertise in FPS games. He streams regularly, provides game analysis, and competes in esports tournaments. Marcus partners with gaming hardware brands and game developers to create authentic content for his engaged audience.",
-      platforms: ["Twitch", "YouTube", "Twitter"],
-      location: "Seoul, South Korea",
-      contactEmail: "marcus.gaming@example.com",
-      contactPhone: "+82 2 312 3456",
-      website: "www.marcusplays.com",
-      verified: true,
-      profileImage: "https://randomuser.me/api/portraits/men/22.jpg",
-      audienceDemographics: {
-        age: "16-30",
-        gender: "80% Male",
-        topLocations: ["South Korea", "USA", "Brazil"],
-      },
-      rates: {
-        twitchStream: "$5,000",
-        youtubeVideo: "$4,000",
-        tournamentAppearance: "$10,000",
-      },
-      contentExamples: [
-        "Gameplay streams",
-        "Esports commentary",
-        "Hardware reviews",
-      ],
-    },
-  ];
+  // Fetch influencers from API
+  useEffect(() => {
+    const fetchInfluencers = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch("http://localhost:4000/api/influencers");
+        const data = await response.json();
+
+        if (data.influencers) {
+          setInfluencers(data.influencers);
+        } else {
+          setError("No influencers found");
+        }
+      } catch (err) {
+        setError("Failed to fetch influencers");
+        console.error("Error fetching influencers:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInfluencers();
+  }, []);
+
+  // Fetch detailed influencer data by slug
+  const fetchInfluencerDetails = async (slug) => {
+    try {
+      const token = localStorage.getItem("token"); // Assuming token is stored in localStorage
+      const response = await fetch(
+        `http://localhost:4000/api/influencers/slug/${slug}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.influencer) {
+        return data.influencer;
+      } else {
+        throw new Error("Influencer details not found");
+      }
+    } catch (err) {
+      console.error("Error fetching influencer details:", err);
+      return null;
+    }
+  };
 
   const handleClearFilters = () => {
     setSelectedCategory("All");
@@ -274,14 +138,18 @@ const InfluencerPage = () => {
 
   const filteredInfluencers = influencers.filter((influencer) => {
     const matchesCategory =
-      selectedCategory === "All" || influencer.category === selectedCategory;
+      selectedCategory === "All" ||
+      (influencer.niches &&
+        influencer.niches.includes(selectedCategory.toLowerCase()));
 
     const matchesSearch =
       influencer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      influencer.description.toLowerCase().includes(searchQuery.toLowerCase());
+      (influencer.bio &&
+        influencer.bio.toLowerCase().includes(searchQuery.toLowerCase()));
+
+    const followerCount = influencer.stats?.followers || 0;
 
     const matchesFollowerRange = () => {
-      const followerCount = parseFollowerCount(influencer.followers);
       switch (selectedFollowerRange) {
         case "Nano (1K-10K)":
           return followerCount >= 1000 && followerCount <= 10000;
@@ -301,8 +169,17 @@ const InfluencerPage = () => {
     return matchesCategory && matchesSearch && matchesFollowerRange();
   });
 
-  const handleInfluencerClick = (influencer) => {
-    setSelectedInfluencer(influencer);
+  const handleInfluencerClick = async (influencer) => {
+    // Fetch detailed influencer data
+    const detailedInfluencer = await fetchInfluencerDetails(influencer.slug);
+
+    if (detailedInfluencer) {
+      setSelectedInfluencer(detailedInfluencer);
+    } else {
+      // Fallback to basic data if detailed fetch fails
+      setSelectedInfluencer(influencer);
+    }
+
     setShowContactForm(false);
     setContactData({
       name: "",
@@ -342,34 +219,71 @@ const InfluencerPage = () => {
     });
   };
 
+  // Format follower count for display
+  const formatFollowerCount = (count) => {
+    if (count >= 1000000) {
+      return `${(count / 1000000).toFixed(1)}M`;
+    } else if (count >= 1000) {
+      return `${(count / 1000).toFixed(1)}K`;
+    }
+    return count.toString();
+  };
+
+  if (loading) {
+    return (
+      <main className="mt-20 bg-gray-100 font-sans min-h-screen">
+        <Header />
+        <div className="flex justify-center items-center h-64">
+          <div className="text-xl">Loading influencers...</div>
+        </div>
+        <Footer />
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="mt-20 bg-gray-100 font-sans min-h-screen">
+        <Header />
+        <div className="flex justify-center items-center h-64">
+          <div className="text-xl text-red-500">{error}</div>
+        </div>
+        <Footer />
+      </main>
+    );
+  }
+
   return (
     <main className="mt-20 bg-gray-100 font-sans">
       <Header />
 
       {/* Hero Section */}
-      <section className="pt-20 pb-8 bg-gradient-to-br from-slate-900 via-gray-800 to-black text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold font-serif mb-4">
-              Discover Influencers
-            </h1>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Find the perfect influencers to elevate your brand's presence
-            </p>
-          </div>
+      <section className="pt-20 pb-16 bg-gradient-to-br from-slate-900/80 via-gray-800/80 to-black/80 text-white relative">
+        {/* Background image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
+          style={{ backgroundImage: "url('/ibanner1.jpg')", opacity: 50 }}
+        ></div>
 
-          {/* Search Bar */}
-          <div className="max-w-4xl mx-auto">
-            <div className="relative">
-              <MagnifyingGlassIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search by name or specialty..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 border border-gray-700 bg-gray-900 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-lg text-white placeholder-gray-500 transition-colors"
-              />
-            </div>
+        {/* Content */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <h1 className="text-4xl md:text-6xl font-bold font-serif text-black mb-6">
+            Discover Influencers
+          </h1>
+          <p className="text-xl text-black font-bold max-w-3xl mx-auto mb-8">
+            Find the perfect influencers to elevate your brand's presence
+          </p>
+        </div>
+        <div className="max-w-4xl mx-auto">
+          <div className="relative">
+            <MagnifyingGlassIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search by name or specialty..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-12 pr-4 py-4 border border-gray-700 bg-gray-900 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-lg text-white placeholder-gray-500 transition-colors"
+            />
           </div>
         </div>
       </section>
@@ -470,44 +384,46 @@ const InfluencerPage = () => {
                 {filteredInfluencers.length > 0 ? (
                   filteredInfluencers.map((influencer) => (
                     <div
-                      key={influencer.id}
+                      key={influencer._id || influencer.id}
                       className="bg-grya-800 rounded-xl shadow-lg border border-gray-200 overflow-hidden cursor-pointer hover:shadow-xl transition-shadow duration-200"
                       onClick={() => handleInfluencerClick(influencer)}
                     >
                       <div className="p-6">
                         <div className="flex items-start space-x-4">
                           <div className="flex-shrink-0">
-                            <img
-                              src={influencer.profileImage}
-                              alt={influencer.name}
-                              className="h-16 w-16 rounded-full object-cover"
-                            />
+                            <div className="h-16 w-16 rounded-full bg-gray-300 flex items-center justify-center">
+                              <UserIcon className="h-8 w-8 text-gray-600" />
+                            </div>
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center">
                               <h3 className="text-xl font-semibold text-gray-900 truncate">
                                 {influencer.name}
                               </h3>
-                              {influencer.verified && (
-                                <CheckBadgeIcon className="h-6 w-6 text-blue-500 ml-2" />
-                              )}
                             </div>
                             <p className="text-sm text-gray-600">
-                              {influencer.category} • {influencer.followers}{" "}
+                              {influencer.niches && influencer.niches.length > 0
+                                ? influencer.niches.join(", ")
+                                : "No category specified"}{" "}
+                              •{" "}
+                              {formatFollowerCount(
+                                influencer.stats?.followers || 0
+                              )}{" "}
                               followers
                             </p>
                             <p className="text-sm text-gray-700 mt-2 line-clamp-2">
-                              {influencer.description}
+                              {influencer.bio || "No description available"}
                             </p>
                             <div className="mt-3 flex flex-wrap gap-2">
-                              {influencer.platforms.map((platform, index) => (
-                                <span
-                                  key={index}
-                                  className="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full"
-                                >
-                                  {platform}
-                                </span>
-                              ))}
+                              {influencer.platforms &&
+                                influencer.platforms.map((platform, index) => (
+                                  <span
+                                    key={index}
+                                    className="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full"
+                                  >
+                                    {platform}
+                                  </span>
+                                ))}
                             </div>
                           </div>
                         </div>
@@ -515,7 +431,9 @@ const InfluencerPage = () => {
                       <div className="bg-gray-50 px-6 py-4 flex justify-between items-center border-t border-gray-200">
                         <div className="text-sm text-gray-600">
                           <span className="font-medium">Engagement:</span>{" "}
-                          {influencer.engagement}
+                          {influencer.stats?.engagementRate
+                            ? `${influencer.stats.engagementRate}%`
+                            : "N/A"}
                         </div>
                         <button className="text-sm font-semibold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent hover:from-purple-700 hover:to-pink-700 transition-colors">
                           View Profile →
@@ -547,24 +465,29 @@ const InfluencerPage = () => {
           <div className="bg-white rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto shadow-2xl transform scale-95 transition-transform duration-300">
             <div className="p-8 border-b border-gray-200 flex justify-between items-start">
               <div className="flex items-start space-x-4">
-                <img
-                  src={selectedInfluencer.profileImage}
-                  alt={selectedInfluencer.name}
-                  className="h-20 w-20 rounded-full object-cover"
-                />
+                <div className="h-20 w-20 rounded-full bg-gray-300 flex items-center justify-center">
+                  <UserIcon className="h-10 w-10 text-gray-600" />
+                </div>
                 <div>
                   <div className="flex items-center">
                     <h2 className="text-3xl font-bold font-serif text-gray-900 mr-2">
                       {selectedInfluencer.name}
                     </h2>
-                    {selectedInfluencer.verified && (
-                      <CheckBadgeIcon className="h-7 w-7 text-blue-500" />
-                    )}
                   </div>
                   <p className="text-gray-600 mt-1 text-base">
-                    {selectedInfluencer.category} •{" "}
-                    {selectedInfluencer.followers} followers •{" "}
-                    {selectedInfluencer.engagement} engagement
+                    {selectedInfluencer.niches &&
+                    selectedInfluencer.niches.length > 0
+                      ? selectedInfluencer.niches.join(", ")
+                      : "No category specified"}{" "}
+                    •{" "}
+                    {formatFollowerCount(
+                      selectedInfluencer.stats?.followers || 0
+                    )}{" "}
+                    followers •{" "}
+                    {selectedInfluencer.stats?.engagementRate
+                      ? `${selectedInfluencer.stats.engagementRate}%`
+                      : "N/A"}{" "}
+                    engagement
                   </p>
                 </div>
               </div>
@@ -583,93 +506,79 @@ const InfluencerPage = () => {
                     About
                   </h3>
                   <p className="text-gray-700 leading-relaxed mb-6">
-                    {selectedInfluencer.fullDescription}
+                    {selectedInfluencer.bio || "No description available"}
                   </p>
                   <div className="space-y-4">
-                    <div className="flex items-center text-gray-600">
-                      <MapPinIcon className="h-5 w-5 text-amber-500 mr-3" />
-                      Location:{" "}
-                      <span className="font-semibold ml-2">
-                        {selectedInfluencer.location}
-                      </span>
-                    </div>
                     <div className="flex items-center text-gray-600">
                       <UserIcon className="h-5 w-5 text-amber-500 mr-3" />
                       Platforms:{" "}
                       <span className="font-semibold ml-2">
-                        {selectedInfluencer.platforms.join(", ")}
+                        {selectedInfluencer.platforms
+                          ? selectedInfluencer.platforms.join(", ")
+                          : "N/A"}
                       </span>
-                    </div>
-                    <div className="flex items-center text-gray-600">
-                      <LinkIcon className="h-5 w-5 text-amber-500 mr-3" />
-                      Website:{" "}
-                      <a
-                        href={`https://${selectedInfluencer.website}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm font-semibold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent hover:from-purple-700 hover:to-pink-700 transition-colors"
-                      >
-                        {selectedInfluencer.website}
-                      </a>
                     </div>
                   </div>
                 </div>
 
                 <div className="md:col-span-1">
                   <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                    Audience & Rates
+                    Audience & Stats
                   </h3>
                   <div className="bg-gray-50 rounded-xl p-6 mb-6 shadow-sm">
                     <p className="text-sm font-semibold text-gray-800 mb-2">
-                      Audience Demographics
+                      Statistics
                     </p>
                     <ul className="text-gray-600 space-y-1 text-sm">
                       <li>
-                        <span className="font-medium">Age:</span>{" "}
-                        {selectedInfluencer.audienceDemographics.age}
-                      </li>
-                      <li>
-                        <span className="font-medium">Gender:</span>{" "}
-                        {selectedInfluencer.audienceDemographics.gender}
-                      </li>
-                      <li>
-                        <span className="font-medium">Top Locations:</span>{" "}
-                        {selectedInfluencer.audienceDemographics.topLocations.join(
-                          ", "
+                        <span className="font-medium">Followers:</span>{" "}
+                        {formatFollowerCount(
+                          selectedInfluencer.stats?.followers || 0
                         )}
+                      </li>
+                      <li>
+                        <span className="font-medium">Avg. Views:</span>{" "}
+                        {selectedInfluencer.stats?.avgViews
+                          ? formatFollowerCount(
+                              selectedInfluencer.stats.avgViews
+                            )
+                          : "N/A"}
+                      </li>
+                      <li>
+                        <span className="font-medium">Engagement Rate:</span>{" "}
+                        {selectedInfluencer.stats?.engagementRate
+                          ? `${selectedInfluencer.stats.engagementRate}%`
+                          : "N/A"}
                       </li>
                     </ul>
                   </div>
 
-                  {/* <div className="bg-gray-50 rounded-xl p-6 shadow-sm">
+                  <div className="bg-gray-50 rounded-xl p-6 shadow-sm">
                     <p className="text-sm font-semibold text-gray-800 mb-2">
-                      Rates
+                      Content Niches
                     </p>
-                    <ul className="text-gray-600 space-y-1 text-sm">
-                      {Object.entries(selectedInfluencer.rates).map(
-                        ([type, rate]) => (
-                          <li key={type}>
-                            <span className="font-medium capitalize">
-                              {type}:
-                            </span>{" "}
-                            {rate}
-                          </li>
-                        )
-                      )}
-                    </ul>
-                  </div> */}
+                    <div className="flex flex-wrap gap-2">
+                      {selectedInfluencer.niches &&
+                        selectedInfluencer.niches.map((niche, index) => (
+                          <span
+                            key={index}
+                            className="px-3 py-1 bg-amber-100 text-amber-800 text-xs font-medium rounded-full"
+                          >
+                            {niche}
+                          </span>
+                        ))}
+                    </div>
+                  </div>
                 </div>
               </div>
 
               <div className="mt-8 pt-6 border-t border-gray-200">
                 <div className="flex justify-between items-center">
-                  <div className="flex items-center text-sm text-gray-600">
-                    <EnvelopeIcon className="h-5 w-5 text-gray-400 mr-2" />
-                    <span className="font-medium">Email:</span>{" "}
-                    {selectedInfluencer.contactEmail}
-                    <PhoneIcon className="h-5 w-5 text-gray-400 ml-4 mr-2" />
-                    <span className="font-medium">Phone:</span>{" "}
-                    {selectedInfluencer.contactPhone}
+                  <div className="text-sm text-gray-600">
+                    Member since:{" "}
+                    {new Date(
+                      selectedInfluencer.createdAt
+                    ).toLocaleDateString()}
                   </div>
                   <button
                     onClick={() => setShowContactForm(!showContactForm)}

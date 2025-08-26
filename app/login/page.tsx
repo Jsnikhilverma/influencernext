@@ -2,21 +2,70 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
+import Cookies from "js-cookie";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     rememberMe: false,
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Login attempt:", formData);
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch("http://localhost:4000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Login failed");
+      }
+
+      // Store token in cookie
+      Cookies.set("token", data.token, {
+        expires: formData.rememberMe ? 7 : 1, // 7 days if remember me is checked, otherwise 1 day
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+      });
+
+      // Store user data in localStorage
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      // Redirect based on user role
+      if (data.user.role === "influencer") {
+        router.push("/influencer/dashboard");
+      } else if (data.user.role === "client") {
+        router.push("/client/dashboard");
+      } else {
+        router.push("/");
+      }
+    } catch (error: any) {
+      setError(error.message || "An error occurred during login");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,6 +104,12 @@ const LoginPage = () => {
 
           {/* Form Box */}
           <div className="bg-white rounded-2xl shadow-xl p-8">
+            {error && (
+              <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-md text-sm">
+                {error}
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Email */}
               <div>
@@ -137,9 +192,10 @@ const LoginPage = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-primary-600 to-secondary-600 text-white py-2 px-4 rounded-md hover:opacity-90 transition"
+                disabled={isLoading}
+                className="w-full bg-gradient-to-r from-primary-600 to-secondary-600 text-white py-2 px-4 rounded-md hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Sign in
+                {isLoading ? "Signing in..." : "Sign in"}
               </button>
             </form>
 

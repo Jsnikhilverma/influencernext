@@ -92,12 +92,19 @@ const AboutPage = () => {
       <Header />
 
       {/* Hero Section */}
-      <section className="pt-20 pb-16 bg-gradient-to-br from-slate-900 via-gray-800 to-black text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold font-serif text-white mb-6">
-            About InfluenceHub
+      <section className="pt-20 pb-16 bg-gradient-to-br from-slate-900/80 via-gray-800/80 to-black/80 text-white relative">
+        {/* Background image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
+          style={{ backgroundImage: "url('/ibanner1.jpg')", opacity: 50 }}
+        ></div>
+
+        {/* Content */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <h1 className="text-4xl md:text-6xl font-bold font-serif text-black mb-6">
+            About us
           </h1>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
+          <p className="text-xl text-black font-bold max-w-3xl mx-auto mb-8">
             We're on a mission to democratize influence marketing and create
             opportunities for creators worldwide to build sustainable careers
             doing what they love.
@@ -140,11 +147,11 @@ const AboutPage = () => {
                 </p>
               </div>
             </div>
-            <div className="order-1 lg:order-2">
+            <div className="order-1 w-full h-full lg:order-2">
               <img
-                src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1171&q=80"
+                src="/iabou.jpg"
                 alt="Team collaboration"
-                className="rounded-2xl shadow-2xl transition-transform duration-300 hover:scale-[1.02]"
+                className="rounded-2xl shadow-2xl w-full h-full transition-transform duration-300 hover:scale-[1.02]"
               />
             </div>
           </div>
