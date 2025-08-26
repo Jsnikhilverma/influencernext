@@ -238,8 +238,12 @@ const DiscoverPage = () => {
   };
 
   const formatDate = (dateString) => {
-    const options = { day: "numeric", month: "short", year: "numeric" };
-    return new Date(dateString).toLocaleDateString("en-US", options);
+    const options = {
+      day: "numeric",
+      month: "short",
+      year: "numeric" as "numeric" | "2-digit",
+    };
+    return new Date(dateString).toLocaleDateString("en-US");
   };
 
   const formatBudget = (project) => {
