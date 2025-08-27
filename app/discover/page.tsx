@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import {
@@ -15,22 +15,43 @@ import {
   DocumentTextIcon,
   StarIcon,
 } from "@heroicons/react/24/solid";
+import Cookies from "js-cookie";
+
+// Define TypeScript-like interfaces for better code reliability :cite[1]:cite[6]
+interface Project {
+  _id: string;
+  title: string;
+  description?: string;
+  niches?: string[];
+  platforms?: string[];
+  budgetMin?: number;
+  budgetMax?: number;
+  status?: string;
+  createdAt: string;
+  client?: {
+    name: string;
+  };
+}
+
+interface BidData {
+  price: string;
+  message: string;
+}
 
 const DiscoverPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedBudget, setSelectedBudget] = useState("All");
   const [selectedDate, setSelectedDate] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedProject, setSelectedProject] = useState(null);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [showBidForm, setShowBidForm] = useState(false);
-  const [bidData, setBidData] = useState({
+  const [bidData, setBidData] = useState<BidData>({
     price: "",
     message: "",
-    duration: "",
   });
-  const [projects, setProjects] = useState([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [bidError, setBidError] = useState("");
   const [bidSuccess, setBidSuccess] = useState("");
   const [isSubmittingBid, setIsSubmittingBid] = useState(false);
@@ -62,46 +83,59 @@ const DiscoverPage = () => {
 
   const dateFilters = ["All", "Last 24 hr", "Last Week", "Last Month"];
 
-  // Fetch all projects
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(
-          "https://my-backend-lljl.onrender.com/api/clients/projects"
-        );
-        const data = await response.json();
-
-        if (response.ok) {
-          setProjects(data.projects || []);
-        } else {
-          setError("Failed to fetch projects");
-        }
-      } catch (err) {
-        setError("Error connecting to server");
-        console.error("Error fetching projects:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProjects();
-  }, []);
-
-  // Fetch project details by ID
-  const fetchProjectDetails = async (projectId) => {
+  // Fetch all projects with useCallback to prevent unnecessary re-renders
+  const fetchProjects = useCallback(async () => {
     try {
+      setLoading(true);
+      setError(null);
       const response = await fetch(
-        `https://my-backend-lljl.onrender.com/api/clients/projects/id/${projectId}`
+        `${process.env.VITE_BASE_URL}/clients/projects`
       );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
 
-      if (response.ok) {
-        return data.project;
-      } else {
-        console.error("Failed to fetch project details");
-        return null;
+      // Sort projects by creation date (newest first)
+      const sortedProjects = (data.projects || []).sort(
+        (a: Project, b: Project) => {
+          return (
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+        }
+      );
+      setProjects(sortedProjects);
+    } catch (err) {
+      console.error("Error fetching projects:", err);
+      setError(
+        err instanceof Error ? err.message : "Error connecting to server"
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchProjects();
+  }, [fetchProjects]);
+
+  // Fetch project details by ID
+  const fetchProjectDetails = async (
+    projectId: string
+  ): Promise<Project | null> => {
+    try {
+      const response = await fetch(
+        `${process.env.VITE_BASE_URL}/clients/projects/id/${projectId}`
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
+      const data = await response.json();
+      return data.project || null;
     } catch (err) {
       console.error("Error fetching project details:", err);
       return null;
@@ -140,20 +174,19 @@ const DiscoverPage = () => {
     return matchesCategory && matchesSearch && matchesBudget && matchesDate;
   });
 
-  const handleProjectClick = async (project) => {
+  const handleProjectClick = async (project: Project) => {
     const projectDetails = await fetchProjectDetails(project._id);
     setSelectedProject(projectDetails || project);
     setShowBidForm(false);
     setBidData({
       price: "",
       message: "",
-      duration: "",
     });
     setBidError("");
     setBidSuccess("");
   };
 
-  const handleBidSubmit = async (e) => {
+  const handleBidSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmittingBid(true);
     setBidError("");
@@ -161,7 +194,7 @@ const DiscoverPage = () => {
 
     try {
       // Get the token from localStorage
-      const token = localStorage.getItem("token");
+      const token = Cookies.get("token");
 
       if (!token) {
         setBidError("You need to be logged in to submit a bid");
@@ -169,8 +202,29 @@ const DiscoverPage = () => {
         return;
       }
 
+      // Input validation
+      if (!bidData.price || !bidData.message) {
+        setBidError("Please fill in all required fields");
+        setIsSubmittingBid(false);
+        return;
+      }
+
+      const amount = parseInt(bidData.price);
+      if (isNaN(amount) || amount <= 0) {
+        setBidError("Please enter a valid bid amount");
+        setIsSubmittingBid(false);
+        return;
+      }
+
+      if (!selectedProject) {
+        setBidError("No project selected");
+        setIsSubmittingBid(false);
+        return;
+      }
+
+      // API call to submit bid
       const response = await fetch(
-        "https://my-backend-lljl.onrender.com/api/influencers/bids",
+        `${process.env.VITE_BASE_URL}/influencers/bids`,
         {
           method: "POST",
           headers: {
@@ -179,9 +233,8 @@ const DiscoverPage = () => {
           },
           body: JSON.stringify({
             projectId: selectedProject._id,
-            amount: parseInt(bidData.price),
+            amount: amount,
             message: bidData.message,
-            duration: bidData.duration,
           }),
         }
       );
@@ -193,24 +246,29 @@ const DiscoverPage = () => {
         setBidData({
           price: "",
           message: "",
-          duration: "",
         });
         setTimeout(() => {
           setShowBidForm(false);
           setBidSuccess("");
         }, 2000);
       } else {
-        setBidError(data.message || "Failed to submit bid");
+        setBidError(data.message || "Failed to submit bid. Please try again.");
       }
     } catch (err) {
-      setBidError("Error connecting to server");
       console.error("Error submitting bid:", err);
+      setBidError(
+        "Error connecting to server. Please check your connection and try again."
+      );
     } finally {
       setIsSubmittingBid(false);
     }
   };
 
-  const handleBidChange = (e) => {
+  const handleBidChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value } = e.target;
     setBidData((prev) => ({
       ...prev,
@@ -224,7 +282,6 @@ const DiscoverPage = () => {
     setBidData({
       price: "",
       message: "",
-      duration: "",
     });
     setBidError("");
     setBidSuccess("");
@@ -237,16 +294,16 @@ const DiscoverPage = () => {
     setSearchQuery("");
   };
 
-  const formatDate = (dateString) => {
-    const options = {
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = {
       day: "numeric",
       month: "short",
-      year: "numeric" as "numeric" | "2-digit",
+      year: "numeric",
     };
-    return new Date(dateString).toLocaleDateString("en-US");
+    return new Date(dateString).toLocaleDateString("en-US", options);
   };
 
-  const formatBudget = (project) => {
+  const formatBudget = (project: Project) => {
     if (project.budgetMin && project.budgetMax) {
       return `$${project.budgetMin} - $${project.budgetMax}`;
     } else if (project.budgetMin) {
@@ -274,6 +331,12 @@ const DiscoverPage = () => {
         <Header />
         <div className="flex justify-center items-center h-64">
           <div className="text-xl text-red-500">{error}</div>
+          <button
+            onClick={fetchProjects}
+            className="ml-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+          >
+            Retry
+          </button>
         </div>
         <Footer />
       </main>
@@ -415,6 +478,12 @@ const DiscoverPage = () => {
                   <p className="text-gray-600 text-lg">
                     No projects found matching your criteria.
                   </p>
+                  <button
+                    onClick={clearFilters}
+                    className="mt-4 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                  >
+                    Clear Filters
+                  </button>
                 </div>
               ) : (
                 <div className="space-y-6">
@@ -662,7 +731,7 @@ const DiscoverPage = () => {
                   )}
 
                   <form onSubmit={handleBidSubmit} className="space-y-6">
-                    <div className="grid md:grid-cols-2 gap-6">
+                    <div className="grid md:grid-cols-1 gap-6">
                       <div>
                         <label className="block text-sm font-semibold text-gray-700 mb-2">
                           Your Bid Price ($)
@@ -678,7 +747,7 @@ const DiscoverPage = () => {
                           min="1"
                         />
                       </div>
-                      <div>
+                      {/* <div>
                         <label className="block text-sm font-semibold text-gray-700 mb-2">
                           Estimated Duration
                         </label>
@@ -699,7 +768,7 @@ const DiscoverPage = () => {
                           <option value="2-3 months">2-3 months</option>
                           <option value="3+ months">3+ months</option>
                         </select>
-                      </div>
+                      </div> */}
                     </div>
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-2">

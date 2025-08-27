@@ -26,19 +26,16 @@ const LoginPage = () => {
     setError("");
 
     try {
-      const response = await fetch(
-        "https://my-backend-lljl.onrender.com/api/auth/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: formData.email,
-            password: formData.password,
-          }),
-        }
-      );
+      const response = await fetch(`${process.env.VITE_BASE_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
 
       const data = await response.json();
 
@@ -54,13 +51,14 @@ const LoginPage = () => {
       });
 
       // Store user data in localStorage
-      localStorage.setItem("user", JSON.stringify(data.user));
+      Cookies.set("user", JSON.stringify(data.user));
+      Cookies.set("role", data.user.role);
 
       // Redirect based on user role
       if (data.user.role === "influencer") {
-        router.push("/influencer/dashboard");
+        router.push("/influencerdashboard");
       } else if (data.user.role === "client") {
-        router.push("/client/dashboard");
+        router.push("/clientdashboard");
       } else {
         router.push("/");
       }

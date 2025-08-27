@@ -48,7 +48,7 @@ const TopInfluencers = () => {
     const fetchInfluencers = async () => {
       try {
         const response = await fetch(
-          "https://my-backend-lljl.onrender.com/api/influencers"
+          `${process.env.VITE_BASE_URL}/influencers`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch influencers");
@@ -210,12 +210,12 @@ const TopInfluencers = () => {
 
                 {/* Stats Grid */}
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center p-3 bg-white/5 rounded-2xl border border-white/10">
-                    <span className="text-white/70 font-medium">Niche</span>
+                  {/* <div className="flex justify-between items-center p-3 bg-white/5 rounded-2xl border border-white/10">
+                    <span className="text-white/70 font-medium">Category</span>
                     <span className="text-white font-semibold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
                       {influencer.niche}
                     </span>
-                  </div>
+                  </div> */}
 
                   <div className="flex justify-between items-center p-3 bg-white/5 rounded-2xl border border-white/10">
                     <span className="text-white/70 font-medium">Followers</span>

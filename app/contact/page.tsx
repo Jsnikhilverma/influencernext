@@ -7,8 +7,8 @@ import {
   EnvelopeIcon,
   PhoneIcon,
   MapPinIcon,
-  ClockIcon, // Added for office hours, if applicable
-  PaperAirplaneIcon, // For send button
+  ClockIcon,
+  PaperAirplaneIcon,
 } from "@heroicons/react/24/outline";
 
 const ContactPage = () => {
@@ -16,6 +16,11 @@ const ContactPage = () => {
     name: "",
     email: "",
     subject: "",
+    message: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState({
+    success: null,
     message: "",
   });
 
@@ -27,17 +32,44 @@ const ContactPage = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Contact form submitted:", formData);
-    // In a real application, you would send this data to your backend API
-    alert("Thank you for your message! We'll get back to you soon.");
-    setFormData({
-      name: "",
-      email: "",
-      subject: "",
-      message: "",
-    });
+    setIsSubmitting(true);
+    setSubmitStatus({ success: null, message: "" });
+
+    try {
+      const response = await fetch("http://localhost:4000/api/queries", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setSubmitStatus({
+          success: true,
+          message: "Thank you for your message! We'll get back to you soon.",
+        });
+        setFormData({
+          name: "",
+          email: "",
+          subject: "",
+          message: "",
+        });
+      } else {
+        throw new Error("Failed to submit form");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      setSubmitStatus({
+        success: false,
+        message:
+          "Sorry, there was an error sending your message. Please try again later.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -45,15 +77,12 @@ const ContactPage = () => {
       <Header />
 
       {/* Hero Section */}
-
       <section className="pt-20 pb-16 bg-gradient-to-br from-slate-900/80 via-gray-800/80 to-black/80 text-white relative">
-        {/* Background image */}
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
-          style={{ backgroundImage: "url('/ibanner1.jpg')", opacity: 50 }}
+          style={{ backgroundImage: "url('/ibanner1.jpg')", opacity: 0.5 }}
         ></div>
 
-        {/* Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <h1 className="text-4xl md:text-6xl font-bold font-serif text-black mb-6">
             Get in Touch
@@ -86,7 +115,7 @@ const ContactPage = () => {
                     </p>
                     <a
                       href="mailto:support@influencehub.com"
-                      className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent  hover:text-amber-800 font-medium transition-colors"
+                      className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent hover:text-amber-800 font-medium transition-colors"
                     >
                       support@influencehub.com
                     </a>
@@ -104,7 +133,7 @@ const ContactPage = () => {
                     </p>
                     <a
                       href="tel:+1 (555) 123-4567"
-                      className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent  hover:text-amber-800 font-medium transition-colors"
+                      className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent hover:text-amber-800 font-medium transition-colors"
                     >
                       +1 (555) 123-4567
                     </a>
@@ -131,6 +160,17 @@ const ContactPage = () => {
               <h2 className="text-3xl font-bold font-serif text-gray-900 mb-8">
                 Send Us a Message
               </h2>
+              {submitStatus.message && (
+                <div
+                  className={`mb-6 p-4 rounded-lg ${
+                    submitStatus.success
+                      ? "bg-green-100 text-green-800"
+                      : "bg-red-100 text-red-800"
+                  }`}
+                >
+                  {submitStatus.message}
+                </div>
+              )}
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label
@@ -148,6 +188,7 @@ const ContactPage = () => {
                     placeholder="John Doe"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
                     required
+                    disabled={isSubmitting}
                   />
                 </div>
                 <div>
@@ -166,6 +207,7 @@ const ContactPage = () => {
                     placeholder="john.doe@example.com"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
                     required
+                    disabled={isSubmitting}
                   />
                 </div>
                 <div>
@@ -184,6 +226,7 @@ const ContactPage = () => {
                     placeholder="Regarding a partnership opportunity..."
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
                     required
+                    disabled={isSubmitting}
                   />
                 </div>
                 <div>
@@ -202,33 +245,50 @@ const ContactPage = () => {
                     placeholder="Type your message here..."
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
                     required
+                    disabled={isSubmitting}
                   ></textarea>
                 </div>
                 <button
                   type="submit"
-                  className="w-full flex items-center justify-center py-3 px-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:bg-amber-600 transition-colors duration-200 shadow-md"
+                  disabled={isSubmitting}
+                  className="w-full flex items-center justify-center py-3 px-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:bg-amber-600 transition-colors duration-200 shadow-md disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  <PaperAirplaneIcon className="h-5 w-5 mr-2" />
-                  Send Message
+                  {isSubmitting ? (
+                    <>
+                      <svg
+                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <PaperAirplaneIcon className="h-5 w-5 mr-2" />
+                      Send Message
+                    </>
+                  )}
                 </button>
               </form>
             </div>
           </div>
         </div>
       </section>
-
-      {/* Map Section (Placeholder) */}
-      {/* <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold font-serif text-gray-900 mb-8">
-            Find Us on the Map
-          </h2>
-          <div className="bg-gray-200 rounded-2xl overflow-hidden shadow-lg aspect-w-16 aspect-h-9 w-full h-96 flex items-center justify-center text-gray-500 text-lg">
-            
-            <p>Map Placeholder</p>
-          </div>
-        </div>
-      </section> */}
 
       <Footer />
     </main>

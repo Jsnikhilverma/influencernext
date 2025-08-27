@@ -82,7 +82,7 @@ const InfluencerPage = () => {
       try {
         setLoading(true);
         const response = await fetch(
-          "https://my-backend-lljl.onrender.com/api/influencers"
+          `${process.env.VITE_BASE_URL}/influencers`
         );
         const data = await response.json();
 
@@ -107,7 +107,7 @@ const InfluencerPage = () => {
     try {
       const token = localStorage.getItem("token"); // Assuming token is stored in localStorage
       const response = await fetch(
-        `https://my-backend-lljl.onrender.com/api/influencers/slug/${slug}`,
+        `${process.env.VITE_BASE_URL}/influencers/slug/${slug}`,
         {
           method: "GET",
           headers: {

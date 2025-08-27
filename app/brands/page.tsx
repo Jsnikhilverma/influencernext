@@ -273,9 +273,9 @@ const BrandsPage = () => {
                     </div>
                   </div>
 
-                  <button className="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:bg-amber-600 transition-colors duration-200 shadow-md">
+                  {/* <button className="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:bg-amber-600 transition-colors duration-200 shadow-md">
                     View Opportunities
-                  </button>
+                  </button> */}
                 </div>
               ))
             ) : (
@@ -285,11 +285,11 @@ const BrandsPage = () => {
             )}
           </div>
 
-          <div className="text-center mt-12">
+          {/* <div className="text-center mt-12">
             <button className="px-8 py-3 text-sm font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors duration-200 shadow-sm">
               Load More Brands
             </button>
-          </div>
+          </div> */}
         </div>
       </section>
 

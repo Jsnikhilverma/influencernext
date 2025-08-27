@@ -71,7 +71,7 @@ const RegisterPage = () => {
 
     try {
       const response = await fetch(
-        "https://my-backend-lljl.onrender.com/api/auth/register",
+        `${process.env.VITE_BASE_URL}/auth/register`,
         {
           method: "POST",
           headers: {
