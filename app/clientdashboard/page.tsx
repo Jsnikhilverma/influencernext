@@ -127,26 +127,22 @@ export default function ClientDashboard() {
       const projectData = {
         title: formData.get("title"),
         description: formData.get("description"),
-        budgetMin: parseInt(formData.get("budgetMin")),
-        budgetMax: parseInt(formData.get("budgetMax")),
-        niches: formData
-          .get("niches")
-          .split(",")
-          .map((niche) => niche.trim()),
-        platforms: formData
-          .get("platforms")
-          .split(",")
-          .map((platform) => platform.trim()),
+        budgetMin: parseInt(formData.get("budgetMin") as string),
+        budgetMax: parseInt(formData.get("budgetMax") as string),
+        niches: formData.getAll("niches"),
       };
 
-      const response = await fetch("http:///api/clients/projects", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(projectData),
-      });
+      const response = await fetch(
+        `${process.env.VITE_BASE_URL}/clients/projects`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(projectData),
+        }
+      );
 
       if (!response.ok) throw new Error("Failed to post project");
 

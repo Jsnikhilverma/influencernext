@@ -82,16 +82,7 @@ export default function InfluencerDashboard() {
       const formData = new FormData(e.target);
       const bio = formData.get("bio");
       const avatarUrl = formData.get("avatarUrl");
-      const niches = formData
-        .get("niches")
-        .split(",")
-        .map((niche) => niche.trim())
-        .filter((niche) => niche !== "");
-      const platforms = formData
-        .get("platforms")
-        .split(",")
-        .map((platform) => platform.trim())
-        .filter((platform) => platform !== "");
+      const niches = formData.getAll("niches");
 
       const response = await fetch(
         `${process.env.VITE_BASE_URL}/influencers/me`,
@@ -101,7 +92,7 @@ export default function InfluencerDashboard() {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ bio, avatarUrl, niches, platforms }),
+          body: JSON.stringify({ bio, avatarUrl, niches }),
         }
       );
 
