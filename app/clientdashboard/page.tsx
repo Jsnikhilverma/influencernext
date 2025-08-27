@@ -24,7 +24,7 @@ export default function ClientDashboard() {
   const fetchUserData = async () => {
     try {
       const token = getCookie("token");
-      const response = await fetch("http://localhost:4000/api/clients/me", {
+      const response = await fetch(`${process.env.VITE_BASE_URL}/clients/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -45,7 +45,7 @@ export default function ClientDashboard() {
     try {
       const token = getCookie("token");
       const response = await fetch(
-        "http://localhost:4000/api/clients/projects",
+        `${process.env.VITE_BASE_URL}/clients/projects`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -66,7 +66,7 @@ export default function ClientDashboard() {
     try {
       const token = getCookie("token");
       const response = await fetch(
-        `http://localhost:4000/api/projects/${projectId}/bids`,
+        `${process.env.VITE_BASE_URL}/projects/${projectId}/bids`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -94,7 +94,7 @@ export default function ClientDashboard() {
       const bio = formData.get("bio");
       const avatarUrl = formData.get("avatarUrl");
 
-      const response = await fetch("http://localhost:4000/api/clients/me", {
+      const response = await fetch(`${process.env.VITE_BASE_URL}/clients/me`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -139,17 +139,14 @@ export default function ClientDashboard() {
           .map((platform) => platform.trim()),
       };
 
-      const response = await fetch(
-        "http://localhost:4000/api/clients/projects",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(projectData),
-        }
-      );
+      const response = await fetch("http:///api/clients/projects", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(projectData),
+      });
 
       if (!response.ok) throw new Error("Failed to post project");
 
@@ -169,7 +166,7 @@ export default function ClientDashboard() {
     try {
       const token = getCookie("token");
       const response = await fetch(
-        `http://localhost:4000/api/bids/${bidId}/accept`,
+        `${process.env.VITE_BASE_URL}/bids/${bidId}/accept`,
         {
           method: "POST",
           headers: {
@@ -197,7 +194,7 @@ export default function ClientDashboard() {
     try {
       const token = getCookie("token");
       const response = await fetch(
-        `http://localhost:4000/api/bids/${bidId}/reject`,
+        `${process.env.VITE_BASE_URL}/bids/${bidId}/reject`,
         {
           method: "POST",
           headers: {

@@ -28,11 +28,14 @@ export default function InfluencerDashboard() {
         return;
       }
 
-      const response = await fetch("http://localhost:4000/api/influencers/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `${process.env.VITE_BASE_URL}/influencers/me`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) throw new Error("Failed to fetch user data");
 
@@ -51,7 +54,7 @@ export default function InfluencerDashboard() {
       if (!token) return;
 
       const response = await fetch(
-        "http://localhost:4000/api/influencers/me/projects",
+        `${process.env.VITE_BASE_URL}/influencers/me/projects`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -90,14 +93,17 @@ export default function InfluencerDashboard() {
         .map((platform) => platform.trim())
         .filter((platform) => platform !== "");
 
-      const response = await fetch("http://localhost:4000/api/influencers/me", {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ bio, avatarUrl, niches, platforms }),
-      });
+      const response = await fetch(
+        `${process.env.VITE_BASE_URL}/influencers/me`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ bio, avatarUrl, niches, platforms }),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();

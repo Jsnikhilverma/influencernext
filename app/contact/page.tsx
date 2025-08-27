@@ -38,7 +38,7 @@ const ContactPage = () => {
     setSubmitStatus({ success: null, message: "" });
 
     try {
-      const response = await fetch("http://localhost:4000/api/queries", {
+      const response = await fetch(`${process.env.VITE_BASE_URL}/queries`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
