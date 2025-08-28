@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useRef } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -100,10 +100,142 @@ const staggerContainer = {
 };
 
 const Categories = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const scrollContainerRef = useRef(null);
+
+  // Calculate how many cards to show based on viewport
+  const cardsToShow = 5;
+  const maxIndex = Math.ceil(categories.length / cardsToShow) - 1;
+
+  const nextSlide = () => {
+    if (currentIndex < maxIndex) {
+      setCurrentIndex(currentIndex + 1);
+    }
+  };
+
+  const prevSlide = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+    }
+  };
+
+  // Calculate the transform value for the slider
+  const transformValue = `-${currentIndex * (100 / cardsToShow)}%`;
+
   return (
     <section className="py-16 bg-gradient-to-r from-purple-600 to-pink-600">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-16 ">
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-16">
         {/* Stats Section */}
+
+        {/* Categories Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-primary-400">
+              Elevate Your Content
+            </span>
+          </h2>
+        </motion.div>
+
+        {/* Categories Carousel Container */}
+        <div className="relative mb-16">
+          {/* Navigation Buttons */}
+          {currentIndex > 0 && (
+            <button
+              onClick={prevSlide}
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 z-10 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 transition-colors duration-300"
+              aria-label="Previous categories"
+            >
+              <svg
+                className="w-6 h-6 text-gray-700"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
+          )}
+
+          {currentIndex < maxIndex && (
+            <button
+              onClick={nextSlide}
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 z-10 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 transition-colors duration-300"
+              aria-label="Next categories"
+            >
+              <svg
+                className="w-6 h-6 text-gray-700"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </button>
+          )}
+
+          {/* Categories Carousel */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={staggerContainer}
+            className="overflow-hidden"
+          >
+            <div
+              ref={scrollContainerRef}
+              className="flex transition-transform duration-500 ease-in-out"
+              style={{ transform: `translateX(${transformValue})` }}
+            >
+              {categories.map((category) => (
+                <motion.div
+                  key={category.name}
+                  variants={fadeIn}
+                  whileHover={{ y: -5 }}
+                  className="group flex-shrink-0"
+                  style={{ width: `${100 / cardsToShow}%` }}
+                >
+                  <Link href={category.href}>
+                    <div className="h-full bg-white rounded-xl p-6 mx-2 border border-gray-200 hover:border-primary-300 transition-all duration-300 flex flex-col shadow-sm hover:shadow-md">
+                      <div
+                        className={`w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r ${category.color} flex items-center justify-center text-2xl transform group-hover:scale-110 transition-transform duration-300 shadow-md`}
+                      >
+                        {category.icon}
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2 text-center group-hover:text-primary-600 transition-colors duration-300">
+                        {category.name}
+                      </h3>
+                      <p className="text-xs text-gray-600 text-center font-light line-clamp-2 flex-grow">
+                        {category.description}
+                      </p>
+                      <div className="mt-3 text-center">
+                        <span className="text-xs font-medium text-primary-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          EXPLORE →
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -131,77 +263,6 @@ const Categories = () => {
             ))}
           </div>
         </motion.div>
-
-        {/* Categories Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-primary-400">
-              Elevate Your Content
-            </span>
-          </h2>
-          {/* <p className="text-xl text-gray-600 max-w-3xl mx-auto font-light">
-            Discover exclusive opportunities in premium categories and connect
-            with luxury brands that match your elite content
-          </p> */}
-        </motion.div>
-
-        {/* Categories Grid */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={staggerContainer}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-16"
-        >
-          {categories.map((category) => (
-            <motion.div
-              key={category.name}
-              variants={fadeIn}
-              whileHover={{ y: -5 }}
-              className="group"
-            >
-              <Link href={category.href}>
-                <div className="h-full bg-white rounded-xl p-8 border border-gray-200 hover:border-primary-300 transition-all duration-300 flex flex-col shadow-sm hover:shadow-md">
-                  <div
-                    className={`w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r ${category.color} flex items-center justify-center text-3xl transform group-hover:scale-110 transition-transform duration-300 shadow-md`}
-                  >
-                    {category.icon}
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3 text-center group-hover:text-primary-600 transition-colors duration-300">
-                    {category.name}
-                  </h3>
-                  <p className="text-sm text-gray-600 text-center font-light line-clamp-2 flex-grow">
-                    {category.description}
-                  </p>
-                  <div className="mt-4 text-center">
-                    <span className="text-xs font-medium text-primary-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      EXPLORE →
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* CTA */}
-        {/* <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          viewport={{ once: true }}
-          className="text-center"
-        >
-          <button className="px-8 py-3 bg-gradient-to-r from-primary-600 to-primary-400 text-white font-medium rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-            Join Our Exclusive Network
-          </button>
-        </motion.div> */}
       </div>
     </section>
   );
