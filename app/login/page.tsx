@@ -50,7 +50,7 @@ const LoginPage = () => {
         sameSite: "strict",
       });
 
-      // Store user data in localStorage
+      // Store user data
       Cookies.set("user", JSON.stringify(data.user));
       Cookies.set("role", data.user.role);
 
@@ -78,36 +78,53 @@ const LoginPage = () => {
   };
 
   return (
-    <>
+    <div className="min-h-screen bg-gradient-to-r from-purple-600 to-pink-600 flex flex-col">
       <Header />
 
-      <main className="mt-20 bg-gradient-to-br from-primary-50 to-secondary-50 flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8">
+      <main className="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-md">
           {/* Logo and Title */}
-          <div className="text-center">
-            <Link
+          <div className="text-center mb-10 mt-20">
+            {/* <Link
               href="/"
               className="flex items-center justify-center space-x-2 mb-8"
             >
-              <div className="w-8 h-8 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">I</span>
+              <div className="w-12 h-12 bg-gradient-to-r from-gold-500 to-gold-300 rounded-xl flex items-center justify-center shadow-lg">
+                <span className="text-slate-900 font-bold text-xl">I</span>
               </div>
-              <span className="text-2xl font-bold text-gray-900">
+              <span className="text-3xl font-bold text-white font-cormorant">
                 InfluenceHub
               </span>
-            </Link>
+            </Link> */}
 
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">
-              Welcome back
+            <h2 className="text-4xl font-bold text-white mb-2 font-cormorant">
+              Welcome Back
             </h2>
-            <p className="text-gray-600">Sign in to your account to continue</p>
+            <p className="text-gray-400 font-light">
+              Sign in to your exclusive account
+            </p>
           </div>
 
           {/* Form Box */}
-          <div className="bg-white rounded-2xl shadow-xl p-8">
+          <div className="bg-black backdrop-blur-md rounded-2xl shadow-2xl p-8 border border-white/10">
             {error && (
-              <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-md text-sm">
-                {error}
+              <div className="mb-6 p-4 bg-red-500/10 border border-red-400/20 text-red-300 rounded-lg text-sm">
+                <div className="flex items-center">
+                  <svg
+                    className="w-5 h-5 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    ></path>
+                  </svg>
+                  {error}
+                </div>
               </div>
             )}
 
@@ -116,7 +133,7 @@ const LoginPage = () => {
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium text-gray-300 mb-2"
                 >
                   Email address
                 </label>
@@ -128,7 +145,7 @@ const LoginPage = () => {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-gold-500/50 focus:border-gold-500/30 text-white placeholder-gray-500 transition-colors duration-300"
                   placeholder="Enter your email"
                 />
               </div>
@@ -137,7 +154,7 @@ const LoginPage = () => {
               <div>
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium text-gray-300 mb-2"
                 >
                   Password
                 </label>
@@ -150,7 +167,7 @@ const LoginPage = () => {
                     required
                     value={formData.password}
                     onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-md px-4 py-2 pr-12 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-gold-500/50 focus:border-gold-500/30 text-white placeholder-gray-500 transition-colors duration-300"
                     placeholder="Enter your password"
                   />
                   <button
@@ -159,9 +176,9 @@ const LoginPage = () => {
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? (
-                      <EyeSlashIcon className="h-5 w-5 text-gray-400" />
+                      <EyeSlashIcon className="h-5 w-5 text-gray-500" />
                     ) : (
-                      <EyeIcon className="h-5 w-5 text-gray-400" />
+                      <EyeIcon className="h-5 w-5 text-gray-500" />
                     )}
                   </button>
                 </div>
@@ -175,16 +192,16 @@ const LoginPage = () => {
                     name="rememberMe"
                     checked={formData.rememberMe}
                     onChange={handleChange}
-                    className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-gold-500 focus:ring-gold-500 border-white/10 rounded bg-white/5"
                   />
-                  <span className="ml-2 text-sm text-gray-900">
+                  <span className="ml-2 text-sm text-gray-300">
                     Remember me
                   </span>
                 </label>
 
                 <Link
                   href="/forgot-password"
-                  className="text-sm text-primary-600 hover:text-primary-500"
+                  className="text-sm text-gold-400 hover:text-gold-300 transition-colors duration-300"
                 >
                   Forgot your password?
                 </Link>
@@ -194,28 +211,53 @@ const LoginPage = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-gradient-to-r from-primary-600 to-secondary-600 text-white py-2 px-4 rounded-md hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-gradient-to-r from-gold-500 to-gold-600 text-white py-3 px-4 rounded-lg hover:from-gold-600 hover:to-gold-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-gold"
               >
-                {isLoading ? "Signing in..." : "Sign in"}
+                {isLoading ? (
+                  <span className="flex items-center justify-center">
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    Signing in...
+                  </span>
+                ) : (
+                  "Sign in"
+                )}
               </button>
             </form>
 
-            {/* Social Logins */}
-            <div className="mt-6">
+            {/* <div className="mt-8">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300" />
+                  <div className="w-full border-t border-white/10" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">
+                  <span className="px-2 bg-transparent text-gray-500 font-light">
                     Or continue with
                   </span>
                 </div>
               </div>
 
               <div className="mt-6 grid grid-cols-2 gap-3">
-                {/* Google */}
-                <button className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+      
+                <button className="w-full inline-flex justify-center py-2.5 px-4 border border-white/10 rounded-lg shadow-sm bg-white/5 text-sm font-medium text-gray-300 hover:bg-white/10 transition-colors duration-300">
                   <svg
                     className="w-5 h-5"
                     viewBox="0 0 24 24"
@@ -229,8 +271,8 @@ const LoginPage = () => {
                   <span className="ml-2">Google</span>
                 </button>
 
-                {/* Twitter */}
-                <button className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+  
+                <button className="w-full inline-flex justify-center py-2.5 px-4 border border-white/10 rounded-lg shadow-sm bg-white/5 text-sm font-medium text-gray-300 hover:bg-white/10 transition-colors duration-300">
                   <svg
                     className="w-5 h-5"
                     fill="currentColor"
@@ -241,15 +283,14 @@ const LoginPage = () => {
                   <span className="ml-2">Twitter</span>
                 </button>
               </div>
-            </div>
+            </div> */}
 
-            {/* Sign Up Link */}
             <div className="mt-8 text-center">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-white">
                 Don't have an account?{" "}
                 <Link
                   href="/register"
-                  className="text-primary-600 hover:text-primary-500 font-medium"
+                  className="text-blue-300 hover:text-gold-300 font-medium transition-colors duration-300"
                 >
                   Sign up
                 </Link>
@@ -258,29 +299,29 @@ const LoginPage = () => {
           </div>
 
           {/* Terms & Privacy */}
-          <div className="text-center mt-4">
-            <p className="text-xs text-gray-500">
+          {/* <div className="text-center mt-6">
+            <p className="text-xs text-white">
               By signing in, you agree to our{" "}
               <Link
                 href="/terms"
-                className="text-primary-600 hover:text-primary-500"
+                className="text-gold-400 hover:text-gold-300 transition-colors duration-300"
               >
                 Terms of Service
               </Link>{" "}
               and{" "}
               <Link
                 href="/privacy"
-                className="text-primary-600 hover:text-primary-500"
+                className="text-gold-400 hover:text-gold-300 transition-colors duration-300"
               >
                 Privacy Policy
               </Link>
             </p>
-          </div>
+          </div> */}
         </div>
       </main>
 
       <Footer />
-    </>
+    </div>
   );
 };
 

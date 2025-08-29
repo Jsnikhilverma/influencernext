@@ -557,7 +557,7 @@ const InfluencerPage = () => {
 
                   <div className="bg-gray-50 rounded-xl p-6 shadow-sm">
                     <p className="text-sm font-semibold text-gray-800 mb-2">
-                      Content Niches
+                      Content Category
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {selectedInfluencer.niches &&

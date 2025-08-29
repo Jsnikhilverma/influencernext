@@ -5,16 +5,19 @@ import Link from "next/link";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
+import { useRouter } from "next/navigation";
 
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [userType, setUserType] = useState<"influencer" | "brand">(
+  const [userType, setUserType] = useState<"influencer" | "client">(
     "influencer"
   );
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+
+  const router = useRouter();
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -86,6 +89,7 @@ const RegisterPage = () => {
       if (response.ok) {
         // Registration successful
         setSuccess(true);
+        router.push("/login");
         // You might want to store the token and user data (e.g., in context or localStorage)
         console.log("Registration successful:", data);
 
@@ -114,106 +118,131 @@ const RegisterPage = () => {
   };
 
   // If registration was successful, show success message
-  if (success) {
-    return (
-      <div className="mt-20 flex flex-col min-h-screen">
-        <Header />
-        <main className="flex-grow bg-gradient-to-br from-primary-50 to-secondary-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg
-                className="w-8 h-8 text-green-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M5 13l4 4L19 7"
-                ></path>
-              </svg>
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Registration Successful!
-            </h2>
-            <p className="text-gray-600 mb-6">
-              Your account has been created successfully. You can now sign in to
-              your account.
-            </p>
-            <Link
-              href="/login"
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-            >
-              Go to Login
-            </Link>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
 
   return (
-    <div className="mt-20 flex flex-col min-h-screen">
+    <div className="min-h-screen bg-gradient-to-r from-purple-600 to-pink-600 flex flex-col">
       <Header />
 
-      <main className="flex-grow bg-gradient-to-br from-primary-50 to-secondary-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8">
-          {/* Header */}
-          <div className="text-center">
-            <Link
-              href="/"
-              className="flex items-center justify-center space-x-2 mb-8"
-            >
-              <div className="w-8 h-8 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">I</span>
+      <main className="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-6xl flex flex-col lg:flex-row rounded-2xl overflow-hidden shadow-2xl">
+          {/* Left Column - Benefits */}
+          <div className="w-full lg:w-2/5 bg-black backdrop-blur-md p-10 border border-white">
+            <div className="flex items-center space-x-2 mb-10">
+              <div className="w-10 h-10 bg-gradient-to-r from-gold-500 to-gold-300 rounded-lg flex items-center justify-center shadow-md">
+                <span className="text-slate-900 font-bold text-xl">I</span>
               </div>
-              <span className="text-2xl font-bold text-gray-900">
+              <span className="text-2xl font-bold text-white font-cormorant">
                 InfluenceHub
               </span>
-            </Link>
+            </div>
 
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">
-              Create your account
+            <h2 className="text-3xl font-bold text-white mb-6 font-cormorant">
+              Join the Premier <br />
+              Influence Network
             </h2>
-            <p className="text-gray-600">
-              Join thousands of influencers and brands
-            </p>
-          </div>
 
-          {/* Error message */}
-          {error && (
-            <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg
-                    className="h-5 w-5 text-red-400"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+            <div className="space-y-6 mb-12">
+              <div className="flex items-start">
+                <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center mr-4 mt-0.5">
+                  <div className="w-2 h-2 bg-black rounded-full"></div>
                 </div>
-                <div className="ml-3">
-                  <p className="text-sm text-red-700">{error}</p>
+                <div>
+                  <h4 className="font-semibold text-white">
+                    Exclusive Partnerships
+                  </h4>
+                  <p className="text-sm text-purple-200 mt-1 font-light">
+                    Connect with premium brands and top-tier influencers
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start">
+                <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center mr-4 mt-0.5">
+                  <div className="w-2 h-2 bg-black rounded-full"></div>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-white">
+                    Advanced Analytics
+                  </h4>
+                  <p className="text-sm text-purple-200 mt-1 font-light">
+                    Data-driven insights to maximize your campaign performance
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start">
+                <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center mr-4 mt-0.5">
+                  <div className="w-2 h-2 bg-black rounded-full"></div>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-white">
+                    Secure Transactions
+                  </h4>
+                  <p className="text-sm text-purple-200 mt-1 font-light">
+                    Protected payments and contract management
+                  </p>
                 </div>
               </div>
             </div>
-          )}
 
-          {/* Registration Form */}
-          <div className="bg-white rounded-2xl shadow-xl p-8">
+            <div className="bg-black/20 p-6 rounded-xl border border-white/5">
+              <p className="text-sm text-purple-200 italic mb-3">
+                "InfluenceHub delivered exceptional ROI for our luxury brand
+                campaigns. The quality of creators is unmatched."
+              </p>
+              <div className="flex items-center">
+                <div className="w-8 h-8 bg-gradient-to-r from-gold-500 to-gold-300 rounded-full mr-3"></div>
+                <div>
+                  <p className="text-xs font-semibold text-white">
+                    Elena Rodriguez
+                  </p>
+                  <p className="text-xs text-purple-300">
+                    Marketing Director, LuxeBrands
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Form */}
+          <div className="w-full lg:w-3/5 bg-black backdrop-blur-md p-10 border border-white">
+            {/* Header */}
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-white mb-2 font-cormorant">
+                Create Your Account
+              </h2>
+              <p className="text-gray-400 font-light">
+                Join our exclusive community of influencers and brands
+              </p>
+            </div>
+
+            {/* Error message */}
+            {error && (
+              <div className="bg-red-500/10 border-l-4 border-red-400 p-4 rounded-md mb-6">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <svg
+                      className="h-5 w-5 text-red-400"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm text-red-300">{error}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* User Type Selection */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-3">
+              {/* <label className="block text-sm font-medium text-gray-300 mb-3">
                 I am a...
-              </label>
+              </label> */}
               <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
@@ -224,29 +253,29 @@ const RegisterPage = () => {
                       userType: "influencer",
                     }));
                   }}
-                  className={`py-3 px-4 rounded-lg border-2 font-medium transition-colors duration-200 ${
+                  className={`py-3 px-4 rounded-lg border font-medium transition-all duration-300 ${
                     userType === "influencer"
-                      ? "border-primary-500 bg-primary-50 text-primary-700"
-                      : "border-gray-300 text-gray-700 hover:border-gray-400"
+                      ? "border-gold-500 bg-gold-500/10 text-white shadow-gold-sm"
+                      : "border-white/10 text-gray-400 hover:border-white/20 bg-white/5"
                   }`}
                 >
-                  <div className="text-2xl mb-1">👤</div>
+                  <div className="text-xl mb-1">👤</div>
                   Influencer
                 </button>
                 <button
                   type="button"
                   onClick={() => {
-                    setUserType("brand");
-                    setFormData((prev) => ({ ...prev, userType: "brand" }));
+                    setUserType("client");
+                    setFormData((prev) => ({ ...prev, userType: "client" }));
                   }}
-                  className={`py-3 px-4 rounded-lg border-2 font-medium transition-colors duration-200 ${
-                    userType === "brand"
-                      ? "border-primary-500 bg-primary-50 text-primary-700"
-                      : "border-gray-300 text-gray-700 hover:border-gray-400"
+                  className={`py-3 px-4 rounded-lg border font-medium transition-all duration-300 ${
+                    userType === "client"
+                      ? "border-gold-500 bg-gold-500/10 text-white shadow-gold-sm"
+                      : "border-white/10 text-gray-400 hover:border-white/20 bg-white/5"
                   }`}
                 >
-                  <div className="text-2xl mb-1">🏢</div>
-                  Brand
+                  <div className="text-xl mb-1">🏢</div>
+                  Client
                 </button>
               </div>
             </div>
@@ -256,7 +285,7 @@ const RegisterPage = () => {
                 <div>
                   <label
                     htmlFor="firstName"
-                    className="block text-sm font-medium text-gray-700 mb-2"
+                    className="block text-sm font-medium text-gray-300 mb-2"
                   >
                     First name
                   </label>
@@ -268,14 +297,14 @@ const RegisterPage = () => {
                     required
                     value={formData.firstName}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500/50 focus:border-gold-500/30 text-white placeholder-gray-500 transition-colors duration-300"
                     placeholder="First name"
                   />
                 </div>
                 <div>
                   <label
                     htmlFor="lastName"
-                    className="block text-sm font-medium text-gray-700 mb-2"
+                    className="block text-sm font-medium text-gray-300 mb-2"
                   >
                     Last name
                   </label>
@@ -287,7 +316,7 @@ const RegisterPage = () => {
                     required
                     value={formData.lastName}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500/50 focus:border-gold-500/30 text-white placeholder-gray-500 transition-colors duration-300"
                     placeholder="Last name"
                   />
                 </div>
@@ -296,7 +325,7 @@ const RegisterPage = () => {
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium text-gray-300 mb-2"
                 >
                   Email address
                 </label>
@@ -308,7 +337,7 @@ const RegisterPage = () => {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500/50 focus:border-gold-500/30 text-white placeholder-gray-500 transition-colors duration-300"
                   placeholder="Enter your email"
                 />
               </div>
@@ -316,7 +345,7 @@ const RegisterPage = () => {
               <div>
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium text-gray-300 mb-2"
                 >
                   Password
                 </label>
@@ -329,7 +358,7 @@ const RegisterPage = () => {
                     required
                     value={formData.password}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 pr-12"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500/50 focus:border-gold-500/30 text-white placeholder-gray-500 transition-colors duration-300 pr-12"
                     placeholder="Create a password"
                   />
                   <button
@@ -338,9 +367,9 @@ const RegisterPage = () => {
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? (
-                      <EyeSlashIcon className="h-5 w-5 text-gray-400" />
+                      <EyeSlashIcon className="h-5 w-5 text-gray-500" />
                     ) : (
-                      <EyeIcon className="h-5 w-5 text-gray-400" />
+                      <EyeIcon className="h-5 w-5 text-gray-500" />
                     )}
                   </button>
                 </div>
@@ -353,7 +382,7 @@ const RegisterPage = () => {
               <div>
                 <label
                   htmlFor="confirmPassword"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium text-gray-300 mb-2"
                 >
                   Confirm password
                 </label>
@@ -366,7 +395,7 @@ const RegisterPage = () => {
                     required
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 pr-12"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500/50 focus:border-gold-500/30 text-white placeholder-gray-500 transition-colors duration-300 pr-12"
                     placeholder="Confirm your password"
                   />
                   <button
@@ -375,9 +404,9 @@ const RegisterPage = () => {
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   >
                     {showConfirmPassword ? (
-                      <EyeSlashIcon className="h-5 w-5 text-gray-400" />
+                      <EyeSlashIcon className="h-5 w-5 text-gray-500" />
                     ) : (
-                      <EyeIcon className="h-5 w-5 text-gray-400" />
+                      <EyeIcon className="h-5 w-5 text-gray-500" />
                     )}
                   </button>
                 </div>
@@ -388,18 +417,18 @@ const RegisterPage = () => {
                 <div>
                   <label
                     htmlFor="niche"
-                    className="block text-sm font-medium text-gray-700 mb-2"
+                    className="block text-sm font-medium text-gray-300 mb-2"
                   >
-                    Primary niche
+                    Category
                   </label>
                   <select
                     id="niche"
                     name="niche"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500/50 focus:border-gold-500/30 text-white transition-colors duration-300"
                     value={formData.niche}
                     onChange={handleChange}
                   >
-                    <option value="">Select your niche</option>
+                    <option value="">Select your Category</option>
                     <option value="fashion-beauty">Fashion & Beauty</option>
                     <option value="technology">Technology</option>
                     <option value="fitness-health">Fitness & Health</option>
@@ -414,11 +443,11 @@ const RegisterPage = () => {
                 </div>
               )}
 
-              {userType === "brand" && (
+              {userType === "client" && (
                 <div>
                   <label
                     htmlFor="company"
-                    className="block text-sm font-medium text-gray-700 mb-2"
+                    className="block text-sm font-medium text-gray-300 mb-2"
                   >
                     Company name
                   </label>
@@ -428,7 +457,7 @@ const RegisterPage = () => {
                     type="text"
                     value={formData.company}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-md focus:outline-none focus:ring-2 focus:ring-gold-500/50 focus:border-gold-500/30 text-white placeholder-gray-500 transition-colors duration-300"
                     placeholder="Enter company name"
                   />
                 </div>
@@ -443,66 +472,92 @@ const RegisterPage = () => {
                     required
                     checked={formData.agreeToTerms}
                     onChange={handleChange}
-                    className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded mt-1"
+                    className="h-4 w-4 text-gold-500 focus:ring-gold-500 border-white/10 rounded mt-1 bg-white/5"
                   />
                   <label
                     htmlFor="agreeToTerms"
-                    className="ml-2 block text-sm text-gray-900"
+                    className="ml-2 block text-sm text-gray-300"
                   >
                     I agree to the{" "}
                     <Link
                       href="/terms"
-                      className="text-primary-600 hover:text-primary-500"
+                      className="text-gold-400 hover:text-gold-300 font-medium"
                     >
                       Terms of Service
                     </Link>{" "}
                     and{" "}
                     <Link
                       href="/privacy"
-                      className="text-primary-600 hover:text-primary-500"
+                      className="text-gold-400 hover:text-gold-300 font-medium"
                     >
                       Privacy Policy
                     </Link>
                   </label>
                 </div>
 
-                <div className="flex items-start">
+                {/* <div className="flex items-start">
                   <input
                     id="newsletter"
                     name="newsletter"
                     type="checkbox"
                     checked={formData.newsletter}
                     onChange={handleChange}
-                    className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded mt-1"
+                    className="h-4 w-4 text-gold-500 focus:ring-gold-500 border-white/10 rounded mt-1 bg-white/5"
                   />
                   <label
                     htmlFor="newsletter"
-                    className="ml-2 block text-sm text-gray-900"
+                    className="ml-2 block text-sm text-gray-300"
                   >
                     Send me updates about new features and opportunities
                   </label>
-                </div>
+                </div> */}
               </div>
 
               <div>
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full flex justify-center py-3 px-4 rounded-md text-sm font-medium text-white bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 shadow-gold disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isLoading ? "Creating account..." : "Create account"}
+                  {isLoading ? (
+                    <span className="flex items-center">
+                      <svg
+                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Creating account...
+                    </span>
+                  ) : (
+                    "Create account"
+                  )}
                 </button>
               </div>
             </form>
 
             {/* Social Registration */}
-            <div className="mt-6">
+            <div className="mt-8">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300" />
+                  <div className="w-full border-t border-white/10" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">
+                  <span className="px-2 bg-transparent text-gray-500 font-light">
                     Or continue with
                   </span>
                 </div>
@@ -511,7 +566,7 @@ const RegisterPage = () => {
               <div className="mt-6 grid grid-cols-2 gap-3">
                 <button
                   type="button"
-                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                  className="w-full inline-flex justify-center py-2.5 px-4 border border-white/10 rounded-md shadow-sm bg-white/5 text-sm font-medium text-gray-300 hover:bg-white/10 transition-colors duration-300"
                 >
                   <svg className="w-5 h-5" viewBox="0 0 24 24">
                     <path
@@ -536,7 +591,7 @@ const RegisterPage = () => {
 
                 <button
                   type="button"
-                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                  className="w-full inline-flex justify-center py-2.5 px-4 border border-white/10 rounded-md shadow-sm bg-white/5 text-sm font-medium text-gray-300 hover:bg-white/10 transition-colors duration-300"
                 >
                   <svg
                     className="w-5 h-5"
@@ -552,78 +607,15 @@ const RegisterPage = () => {
 
             {/* Sign In Link */}
             <div className="mt-8 text-center">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-500">
                 Already have an account?{" "}
                 <Link
                   href="/login"
-                  className="text-primary-600 hover:text-primary-500 font-medium"
+                  className="text-gold-400 hover:text-gold-300 font-medium"
                 >
                   Sign in
                 </Link>
               </p>
-            </div>
-          </div>
-
-          {/* Benefits */}
-          <div className="bg-white rounded-2xl shadow-xl p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Why join InfluenceHub?
-            </h3>
-            <div className="space-y-3">
-              <div className="flex items-start">
-                <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
-                  <svg
-                    className="w-4 h-4 text-green-600"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <span className="text-sm text-gray-600">
-                  Free to join, no hidden fees
-                </span>
-              </div>
-              <div className="flex items-start">
-                <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
-                  <svg
-                    className="w-4 h-4 text-green-600"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <span className="text-sm text-gray-600">
-                  Verified brands and influencers
-                </span>
-              </div>
-              <div className="flex items-start">
-                <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
-                  <svg
-                    className="w-4 h-4 text-green-600"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <span className="text-sm text-gray-600">
-                  Secure payments and contracts
-                </span>
-              </div>
             </div>
           </div>
         </div>

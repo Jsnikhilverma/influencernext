@@ -75,10 +75,10 @@ const DiscoverPage = () => {
     "All",
     "Low to High",
     "High to Low",
-    "$100 - $500",
-    "$500 - $1000",
-    "$1000 - $5000",
-    "$5000+",
+    "₹100 - ₹500",
+    "₹500 - ₹1000",
+    "₹1000 - ₹5000",
+    "₹5000+",
   ];
 
   const dateFilters = ["All", "Last 24 hr", "Last Week", "Last Month"];
@@ -157,16 +157,16 @@ const DiscoverPage = () => {
 
     const matchesBudget =
       selectedBudget === "All" ||
-      (selectedBudget === "$100 - $500" &&
+      (selectedBudget === "₹100 - ₹500" &&
         budgetValue >= 100 &&
         budgetValue <= 500) ||
-      (selectedBudget === "$500 - $1000" &&
+      (selectedBudget === "₹500 - ₹1000" &&
         budgetValue >= 500 &&
         budgetValue <= 1000) ||
-      (selectedBudget === "$1000 - $5000" &&
+      (selectedBudget === "₹1000 - ₹5000" &&
         budgetValue >= 1000 &&
         budgetValue <= 5000) ||
-      (selectedBudget === "$5000+" && budgetValue >= 5000);
+      (selectedBudget === "₹5000+" && budgetValue >= 5000);
 
     // Simplified date filtering - would need proper date handling in production
     const matchesDate = selectedDate === "All";
@@ -305,9 +305,9 @@ const DiscoverPage = () => {
 
   const formatBudget = (project: Project) => {
     if (project.budgetMin && project.budgetMax) {
-      return `$${project.budgetMin} - $${project.budgetMax}`;
+      return `₹${project.budgetMin} - ₹${project.budgetMax}`;
     } else if (project.budgetMin) {
-      return `$${project.budgetMin}+`;
+      return `₹${project.budgetMin}+`;
     } else {
       return "Budget not specified";
     }
@@ -734,7 +734,7 @@ const DiscoverPage = () => {
                     <div className="grid md:grid-cols-1 gap-6">
                       <div>
                         <label className="block text-sm font-semibold text-gray-700 mb-2">
-                          Your Bid Price ($)
+                          Your Bid Price (₹)
                         </label>
                         <input
                           type="number"

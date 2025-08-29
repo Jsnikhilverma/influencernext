@@ -531,7 +531,7 @@ export default function ClientDashboard() {
 
                 <div className="space-y-6">
                   <div>
-                    <h4 className="text-gold font-medium mb-2">Niches</h4>
+                    <h4 className="text-gold font-medium mb-2">Category</h4>
                     <div className="flex flex-wrap gap-2">
                       {selectedProject.niches.map((niche, index) => (
                         <span
@@ -753,7 +753,7 @@ export default function ClientDashboard() {
                       htmlFor="niches"
                       className="block text-sm font-medium text-gray-300 mb-2"
                     >
-                      Niches (comma separated)
+                      Category (comma separated)
                     </label>
                     <input
                       type="text"

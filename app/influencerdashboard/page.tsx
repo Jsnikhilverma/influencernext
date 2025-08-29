@@ -232,7 +232,9 @@ export default function InfluencerDashboard() {
                   </dd>
                 </div>
                 <div className="bg-[#1e1e1e] px-6 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-8 border-b border-gray-700">
-                  <dt className="text-lg font-medium text-gray-400">Niches</dt>
+                  <dt className="text-lg font-medium text-gray-400">
+                    Category
+                  </dt>
                   <dd className="mt-1 text-lg text-gray-200 sm:mt-0 sm:col-span-2">
                     {user.niches?.join(", ") || "Not specified"}
                   </dd>
@@ -295,7 +297,7 @@ export default function InfluencerDashboard() {
                       htmlFor="niches"
                       className="block text-sm font-medium text-gray-400"
                     >
-                      Niches (comma separated)
+                      Category (comma separated)
                     </label>
                     <input
                       type="text"
@@ -395,7 +397,7 @@ export default function InfluencerDashboard() {
                           scope="col"
                           className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"
                         >
-                          Niches
+                          Category
                         </th>
                         <th
                           scope="col"
