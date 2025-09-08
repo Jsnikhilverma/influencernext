@@ -10,56 +10,64 @@ const categories = [
     icon: "👗",
     description: "Style, makeup, and lifestyle content",
     color: "from-pink-500 via-rose-400 to-rose-600",
-    href: "/categories/fashion-beauty",
+    href: "/influencers",
+    slug: "fashion-beauty",
   },
   {
     name: "Technology",
     icon: "💻",
     description: "Tech reviews, tutorials, and gadgets",
     color: "from-blue-500 via-indigo-400 to-indigo-600",
-    href: "/categories/technology",
+    href: "/influencers",
+    slug: "technology",
   },
   {
     name: "Fitness & Health",
     icon: "💪",
     description: "Workouts, nutrition, and wellness",
     color: "from-green-500 via-emerald-400 to-emerald-600",
-    href: "/categories/fitness-health",
+    href: "/influencers",
+    slug: "fitness-health",
   },
   {
     name: "Gourmet & Culinary",
     icon: "🍳",
     description: "Recipes, cooking tips, and food reviews",
     color: "from-amber-500 via-orange-400 to-orange-600",
-    href: "/categories/food-cooking",
+    href: "/influencers",
+    slug: "food-cooking",
   },
   {
     name: "Luxury Travel",
     icon: "✈️",
     description: "Exclusive destinations and premium experiences",
     color: "from-cyan-500 via-blue-400 to-blue-600",
-    href: "/categories/travel",
+    href: "/influencers",
+    slug: "travel",
   },
   {
     name: "Gaming",
     icon: "🎮",
     description: "Game reviews, streams, and esports",
     color: "from-purple-500 via-pink-400 to-pink-600",
-    href: "/categories/gaming",
+    href: "/influencers",
+    slug: "gaming",
   },
   {
     name: "Wealth & Finance",
     icon: "💼",
     description: "Entrepreneurship, investing, and exclusive tips",
     color: "from-yellow-500 via-amber-400 to-amber-600",
-    href: "/categories/business-finance",
+    href: "/influencers",
+    slug: "business-finance",
   },
   {
     name: "Elite Education",
     icon: "📚",
     description: "Premium tutorials, courses, and learning",
     color: "from-teal-500 via-cyan-400 to-cyan-600",
-    href: "/categories/education",
+    href: "/influencers",
+    slug: "education",
   },
 ];
 
@@ -125,8 +133,6 @@ const Categories = () => {
   return (
     <section className="py-16 bg-gradient-to-r from-purple-600 to-pink-600">
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-16">
-        {/* Stats Section */}
-
         {/* Categories Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -136,7 +142,7 @@ const Categories = () => {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-primary-400">
+            <span className="bg-clip-text text-transparent bg-white">
               Elevate Your Content
             </span>
           </h2>
@@ -210,7 +216,7 @@ const Categories = () => {
                   className="group flex-shrink-0"
                   style={{ width: `${100 / cardsToShow}%` }}
                 >
-                  <Link href={category.href}>
+                  <Link href={`${category.href}?${category.slug}`}>
                     <div className="h-full bg-white rounded-xl p-6 mx-2 border border-gray-200 hover:border-primary-300 transition-all duration-300 flex flex-col shadow-sm hover:shadow-md">
                       <div
                         className={`w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r ${category.color} flex items-center justify-center text-2xl transform group-hover:scale-110 transition-transform duration-300 shadow-md`}

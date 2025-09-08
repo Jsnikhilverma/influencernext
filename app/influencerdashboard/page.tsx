@@ -12,6 +12,7 @@ export default function InfluencerDashboard() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [availableProjects, setAvailableProjects] = useState([]);
+  const [avatarFile, setAvatarFile] = useState(null);
 
   const router = useRouter();
 
@@ -71,6 +72,35 @@ export default function InfluencerDashboard() {
     }
   };
 
+  const uploadAvatar = async (file) => {
+    try {
+      const token = getCookie("token");
+      const formData = new FormData();
+      formData.append("avatar", file);
+
+      const response = await fetch(
+        `${process.env.VITE_BASE_URL}/influencers/me/avatar`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to upload avatar");
+      }
+
+      const data = await response.json();
+      return data.avatarUrl;
+    } catch (err) {
+      throw new Error(err.message);
+    }
+  };
+
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -81,9 +111,16 @@ export default function InfluencerDashboard() {
       const token = getCookie("token");
       const formData = new FormData(e.target);
       const bio = formData.get("bio");
-      const avatarUrl = formData.get("avatarUrl");
       const niches = formData.getAll("niches");
+      const platforms = formData.getAll("platforms");
 
+      // Upload avatar first if a new file was selected
+      let avatarUrl = user.avatarUrl;
+      if (avatarFile) {
+        avatarUrl = await uploadAvatar(avatarFile);
+      }
+
+      // Update profile with new data including the avatar URL
       const response = await fetch(
         `${process.env.VITE_BASE_URL}/influencers/me`,
         {
@@ -92,7 +129,7 @@ export default function InfluencerDashboard() {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ bio, avatarUrl, niches }),
+          body: JSON.stringify({ bio, niches, platforms, avatarUrl }),
         }
       );
 
@@ -103,12 +140,20 @@ export default function InfluencerDashboard() {
 
       const data = await response.json();
       setUser(data.user);
+      setAvatarFile(null);
       setSuccess("Profile updated successfully");
       setActiveTab("profile");
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setAvatarFile(file);
     }
   };
 
@@ -252,7 +297,7 @@ export default function InfluencerDashboard() {
                   <dd className="mt-1 text-lg text-gray-200 sm:mt-0 sm:col-span-2">
                     {user.avatarUrl ? (
                       <img
-                        src={user.avatarUrl}
+                        src={`${process.env.NEXT_PUBLIC_BASE_IMG}${user.avatarUrl}`}
                         alt="Avatar"
                         className="h-24 w-24 rounded-full border-2 border-amber-400 shadow-md"
                       />
@@ -326,23 +371,32 @@ export default function InfluencerDashboard() {
                   </div>
                   <div>
                     <label
-                      htmlFor="avatarUrl"
+                      htmlFor="avatar"
                       className="block text-sm font-medium text-gray-400"
                     >
-                      Avatar URL
+                      Avatar
                     </label>
                     <input
-                      type="text"
-                      id="avatarUrl"
-                      name="avatarUrl"
-                      defaultValue={user.avatarUrl}
+                      type="file"
+                      id="avatar"
+                      name="avatar"
+                      onChange={handleAvatarChange}
                       className="mt-2 block w-full bg-[#252525] border border-gray-700 rounded-md shadow-sm p-3 focus:ring-amber-500 focus:border-amber-500 text-gray-200 sm:text-sm"
+                      accept="image/*"
                     />
+                    {avatarFile && (
+                      <p className="mt-2 text-sm text-amber-400">
+                        Selected file: {avatarFile.name}
+                      </p>
+                    )}
                   </div>
                   <div className="flex justify-end space-x-4">
                     <button
                       type="button"
-                      onClick={() => setActiveTab("profile")}
+                      onClick={() => {
+                        setActiveTab("profile");
+                        setAvatarFile(null);
+                      }}
                       className="bg-[#1e1e1e] py-3 px-6 border border-gray-600 rounded-lg shadow-sm text-sm font-medium text-gray-300 hover:bg-[#252525] transition-colors duration-200 focus:outline-none"
                     >
                       Cancel

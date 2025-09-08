@@ -8,6 +8,7 @@ import Brands from "../components/Brands";
 import Testimonials from "../components/Testimonials";
 import Footer from "../components/Footer";
 import CategoriesSection from "../components/Categorystates";
+import InfluencerSelector from "../components/socialmediainfluencer";
 
 export default function Home() {
   return (
@@ -15,7 +16,9 @@ export default function Home() {
       <Header />
       <Hero />
       <CategoriesSection />
+
       <Categories />
+      <InfluencerSelector />
       <Features />
       <TopInfluencers />
       <Brands />

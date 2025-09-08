@@ -18,6 +18,7 @@ import {
   LinkIcon,
   CheckBadgeIcon,
 } from "@heroicons/react/24/outline";
+import { useParams } from "next/navigation";
 
 // Helper function to parse follower count string to a number
 const parseFollowerCount = (followers) => {
@@ -35,9 +36,11 @@ const parseFollowerCount = (followers) => {
 };
 
 const InfluencerPage = () => {
+  const params = useParams();
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedFollowerRange, setSelectedFollowerRange] = useState("All");
   const [selectedDate, setSelectedDate] = useState("All");
+  const [selectedPlatform, setSelectedPlatform] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedInfluencer, setSelectedInfluencer] = useState(null);
   const [showContactForm, setShowContactForm] = useState(false);
@@ -49,6 +52,7 @@ const InfluencerPage = () => {
   const [influencers, setInfluencers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [urlNiche, setUrlNiche] = useState(null);
 
   const categories = [
     "All",
@@ -76,20 +80,66 @@ const InfluencerPage = () => {
 
   const dateFilters = ["All", "Recently Active", "Last Week", "Last Month"];
 
+  const platformFilters = [
+    "All",
+    "Facebook",
+    "Instagram",
+    "YouTube",
+    "TikTok",
+    "Twitter",
+  ];
+
+  // Check if there's a niche in the URL
+  useEffect(() => {
+    if (params && params.niche) {
+      setUrlNiche(params.niche);
+    }
+  }, [params]);
+
   // Fetch influencers from API
   useEffect(() => {
     const fetchInfluencers = async () => {
       try {
         setLoading(true);
-        const response = await fetch(
-          `${process.env.VITE_BASE_URL}/influencers`
-        );
-        const data = await response.json();
 
-        if (data.influencers) {
-          setInfluencers(data.influencers);
+        // If there's a niche in the URL, use the search API
+        if (urlNiche) {
+          const response = await fetch(
+            `${process.env.VITE_BASE_URL}/influencers/search-by-niches`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                niches: [urlNiche.toLowerCase()],
+              }),
+            }
+          );
+
+          const data = await response.json();
+
+          if (data.success && data.data) {
+            setInfluencers(data.data);
+            // Set the category filter to match the URL niche
+            setSelectedCategory(
+              urlNiche.charAt(0).toUpperCase() + urlNiche.slice(1)
+            );
+          } else {
+            setError("No influencers found for this niche");
+          }
         } else {
-          setError("No influencers found");
+          // Otherwise, use the regular influencers API
+          const response = await fetch(
+            `${process.env.VITE_BASE_URL}/influencers`
+          );
+          const data = await response.json();
+
+          if (data.influencers) {
+            setInfluencers(data.influencers);
+          } else {
+            setError("No influencers found");
+          }
         }
       } catch (err) {
         setError("Failed to fetch influencers");
@@ -100,7 +150,7 @@ const InfluencerPage = () => {
     };
 
     fetchInfluencers();
-  }, []);
+  }, [urlNiche]);
 
   // Fetch detailed influencer data by slug
   const fetchInfluencerDetails = async (slug) => {
@@ -135,6 +185,7 @@ const InfluencerPage = () => {
     setSelectedCategory("All");
     setSelectedFollowerRange("All");
     setSelectedDate("All");
+    setSelectedPlatform("All");
     setSearchQuery("");
   };
 
@@ -168,7 +219,19 @@ const InfluencerPage = () => {
       }
     };
 
-    return matchesCategory && matchesSearch && matchesFollowerRange();
+    const matchesPlatform =
+      selectedPlatform === "All" ||
+      (influencer.platforms &&
+        influencer.platforms.some((platform) =>
+          platform.toLowerCase().includes(selectedPlatform.toLowerCase())
+        ));
+
+    return (
+      matchesCategory &&
+      matchesSearch &&
+      matchesFollowerRange() &&
+      matchesPlatform
+    );
   });
 
   const handleInfluencerClick = async (influencer) => {
@@ -270,7 +333,11 @@ const InfluencerPage = () => {
         {/* Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <h1 className="text-4xl md:text-6xl font-bold font-serif text-black mb-6">
-            Discover Influencers
+            {urlNiche
+              ? `${
+                  urlNiche.charAt(0).toUpperCase() + urlNiche.slice(1)
+                } Influencers`
+              : "Discover Influencers"}
           </h1>
           <p className="text-xl text-black font-bold max-w-3xl mx-auto mb-8">
             Find the perfect influencers to elevate your brand's presence
@@ -340,6 +407,25 @@ const InfluencerPage = () => {
                   </select>
                 </div>
 
+                {/* Platform Filter */}
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-white mb-3 flex items-center">
+                    <LinkIcon className="h-4 w-4 mr-2 text-white" />
+                    Platform
+                  </label>
+                  <select
+                    value={selectedPlatform}
+                    onChange={(e) => setSelectedPlatform(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 transition-colors"
+                  >
+                    {platformFilters.map((platform) => (
+                      <option key={platform} value={platform}>
+                        {platform}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
                 {/* Category Filter */}
                 <div className="mb-6">
                   <label className="block text-sm font-medium text-white mb-3">
@@ -393,8 +479,16 @@ const InfluencerPage = () => {
                       <div className="p-6">
                         <div className="flex items-start space-x-4">
                           <div className="flex-shrink-0">
-                            <div className="h-16 w-16 rounded-full bg-gray-300 flex items-center justify-center">
-                              <UserIcon className="h-8 w-8 text-gray-600" />
+                            <div className="h-16 w-16 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
+                              {influencer.avatarUrl ? (
+                                <img
+                                  src={`${process.env.NEXT_PUBLIC_BASE_IMG}${influencer.avatarUrl}`}
+                                  alt={influencer.name}
+                                  className="h-full w-full object-cover"
+                                />
+                              ) : (
+                                <UserIcon className="h-8 w-8 text-gray-600" />
+                              )}
                             </div>
                           </div>
                           <div className="flex-1 min-w-0">

@@ -28,7 +28,7 @@ const RegisterPage = () => {
     userType: "influencer",
     agreeToTerms: false,
     newsletter: false,
-    niche: "",
+
     company: "",
   });
 
