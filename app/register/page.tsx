@@ -413,7 +413,7 @@ const RegisterPage = () => {
               </div>
 
               {/* Conditional fields based on user type */}
-              {userType === "influencer" && (
+              {/* {userType === "influencer" && (
                 <div>
                   <label
                     htmlFor="niche"
@@ -441,7 +441,7 @@ const RegisterPage = () => {
                     <option value="entertainment">Entertainment</option>
                   </select>
                 </div>
-              )}
+              )} */}
 
               {userType === "client" && (
                 <div>
